@@ -1,6 +1,6 @@
-package org.penella.store
+package org.penella.database
 
-import org.penella.Triple
+import org.penella.index.IIndex
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,11 +15,9 @@ import org.penella.Triple
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by alisle on 9/27/16.
+ *
+ * Created by alisle on 9/29/16.
  */
-interface IStore {
-    fun add(value: String) : Long
-    fun add(triple: Triple)
-    fun get(value: Long) : String?
-    fun generateHash(value: String): Long
+class DatabaseImpl(val name: String, val Indexes: MutableList<IIndex>) : IDatabase {
+
 }
