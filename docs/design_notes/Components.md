@@ -1,5 +1,5 @@
 # Component breakdown
-<!!IMAGE>
+![Component Diagram](https://github.com/alisle/Penella/blob/master/docs/img/components.png)
 
 ###Componenets
 ####Node
