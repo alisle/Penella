@@ -16,4 +16,4 @@ The DB is a self contained RDF DB. The set is broken up into a set of shards usi
  Shards contains a set of Indexes. The triples are kept in 4 different indexes to allow fast retrieval. At this point the triples are a series of 3 Longs kept in memory.
 
 ####Index
-The index is a BST of BSTs, this allows for fast retrieval of partial sets of data. The setup is as shown: <!!IMAGE>
+The index is a BST of BSTs, this allows for fast retrieval of partial sets of data. The setup is as shown: ![BST Diagram](https://github.com/alisle/Penella/blob/master/docs/img/Index.png)
