@@ -1,7 +1,7 @@
 package org.penella.store
 
 import net.openhft.hashing.LongHashFunction
-import org.penella.Triple
+import org.penella.structures.triples.Triple
 import org.penella.structures.BSTree
 
 /**
@@ -21,7 +21,7 @@ import org.penella.structures.BSTree
  */
 open class BSTreeStore(seed: Long) : IStore {
     val hashFunction = LongHashFunction.xx_r39(seed)
-    val store : BSTree<String> = BSTree()
+    val store : BSTree<Long, String> = BSTree()
 
     override fun generateHash(value: String) : Long {
         return hashFunction.hashChars(value)

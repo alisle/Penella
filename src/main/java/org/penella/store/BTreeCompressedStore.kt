@@ -3,7 +3,7 @@ package org.penella.store
 import net.openhft.hashing.LongHashFunction
 import org.penella.smaz.Smaz
 import org.penella.structures.BSTree
-import org.penella.Triple
+import org.penella.structures.triples.Triple
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory
 class BTreeCompressedStore(seed: Long, val maxStringSize : Int) : IStore {
     val hashFunction = LongHashFunction.xx_r39(seed)
     val compressor = Smaz()
-    val store : BSTree<ByteArray> = BSTree()
+    val store : BSTree<Long, ByteArray> = BSTree()
 
     companion object {
         val log : Logger = LoggerFactory.getLogger(BTreeCompressedStore::class.java)

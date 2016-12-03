@@ -1,8 +1,12 @@
 package org.penella.database
 
-import org.penella.importers.IDBImporter
-import org.penella.query.IQuery
-import org.penella.query.IResultSet
+import org.junit.Test
+import org.junit.Assert
+
+import org.penella.database.DatabaseImpl
+import org.penella.database.IDatabase
+import org.penella.index.bstree.BSTreeIndexFactory
+import org.penella.store.BSTreeStore
 import org.penella.structures.triples.Triple
 
 
@@ -20,12 +24,16 @@ import org.penella.structures.triples.Triple
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- *
- * Created by alisle on 9/27/16.
+ * Created by alisle on 12/2/16.
  */
-interface IDatabase {
-    fun processQuery(query : IQuery) : IResultSet
-    fun build(importer : IDBImporter) : Boolean
-    fun add(triple: Triple)
-    fun size() : Long
+
+class DatabaseImplTest {
+    @Test
+    fun testAdd() {
+        val store = BSTreeStore(665445839L)
+        val db : IDatabase = DatabaseImpl("Test DB", store, BSTreeIndexFactory(), 10)
+        (0L until 10000L).forEach { x -> db.add(Triple("Subject " + x, "Property " + x, "Object " + x)) }
+
+        Assert.assertEquals(10000L, db.size())
+    }
 }

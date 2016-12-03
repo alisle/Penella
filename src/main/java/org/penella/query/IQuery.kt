@@ -1,5 +1,4 @@
-package org.penella.Messages
-
+package org.penella.query
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +13,7 @@ package org.penella.Messages
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by alisle on 9/29/16.
+ * Created by alisle on 11/1/16.
  */
-enum class Exceptions(val description: String) {
-    BTREE_INVALID_MASK("Invalid Bit Mask!");
+interface IQuery {
 }

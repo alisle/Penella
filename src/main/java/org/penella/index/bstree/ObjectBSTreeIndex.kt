@@ -1,9 +1,9 @@
-package org.penella.shards
+package org.penella.index.bstree
 
-import org.penella.query.IQuery
+import org.penella.index.IndexType
 import org.penella.query.IncompleteResultSet
 import org.penella.structures.triples.HashTriple
-import org.penella.structures.triples.Triple
+import org.penella.structures.triples.TripleType
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,10 @@ import org.penella.structures.triples.Triple
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by alisle on 9/27/16.
+ * Created by alisle on 11/29/16.
  */
-interface IShard {
-    fun size() : Long
-    fun query(query: IQuery) : IncompleteResultSet
-    fun add(triple: HashTriple)
+class ObjectBSTreeIndex() : BSTreeIndex(IndexType.O) {
+    override fun add(triple: HashTriple) = addTriple(triple.hashObj, triple.hashSubject, triple.hashProperty)
+    override fun get(first: TripleType, second: TripleType, firstValue: Long, secondValue: Long) : IncompleteResultSet = throw InvalidIndexRequest()
+    override fun get(first: TripleType, value: Long ) : IncompleteResultSet = if(first == TripleType.OBJECT) getResults(value) else throw IncorrectIndexRequest()
 }

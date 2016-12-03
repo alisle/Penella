@@ -1,6 +1,6 @@
-package org.penella.store
+package org.penella.query
 
-import org.penella.structures.triples.Triple
+import org.penella.structures.triples.HashTriple
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,11 +15,8 @@ import org.penella.structures.triples.Triple
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by alisle on 9/27/16.
+ * Created by alisle on 11/18/16.
  */
-interface IStore {
-    fun add(value: String) : Long
-    fun add(triple: Triple)
-    fun get(value: Long) : String?
-    fun generateHash(value: String): Long
-}
+
+
+class IncompleteResultSet(val triples: Array<HashTriple>) : IResultSet {}

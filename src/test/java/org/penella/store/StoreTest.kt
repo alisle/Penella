@@ -1,7 +1,7 @@
 package org.penella.store
 
 import org.junit.Test
-import org.penella.Triple
+import org.penella.structures.triples.Triple
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import kotlin.test.assertEquals
@@ -49,7 +49,7 @@ abstract class StoreTest {
 
     @Test
     fun testTripleInsertPerformance() {
-        val max = 10000000
+        val max = 1000000
         var start = System.currentTimeMillis()
         var store = createStore()
 
@@ -68,7 +68,7 @@ abstract class StoreTest {
 
     @Test
     fun testStringInsertPerformance() {
-        val max = 10000000
+        val max = 1000000
         var start = System.currentTimeMillis()
         var store = createStore()
 

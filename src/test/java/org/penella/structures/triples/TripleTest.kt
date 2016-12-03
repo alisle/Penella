@@ -1,6 +1,7 @@
-package org.penella
+package org.penella.structures.triples
 
 import org.junit.Test
+import org.penella.structures.triples.Triple
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals

@@ -1,9 +1,11 @@
-package org.penella.shards
+package org.penella.shard
 
-import org.penella.query.IQuery
-import org.penella.query.IncompleteResultSet
+import org.junit.Test
+import org.junit.Assert
+
+import org.penella.index.bstree.BSTreeIndexFactory
+import org.penella.shards.Shard
 import org.penella.structures.triples.HashTriple
-import org.penella.structures.triples.Triple
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +20,21 @@ import org.penella.structures.triples.Triple
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by alisle on 9/27/16.
+ * Created by alisle on 11/30/16.
  */
-interface IShard {
-    fun size() : Long
-    fun query(query: IQuery) : IncompleteResultSet
-    fun add(triple: HashTriple)
+class ShardsTest {
+    @Test
+    fun testAdd() {
+        val shard = Shard(BSTreeIndexFactory())
+        (0L until 100L).forEach { x -> shard.add(HashTriple(x, x, x)) }
+        Assert.assertEquals(shard.size(), 100)
+    }
+
+    @Test
+    fun testQuery() {
+        // TODO: Need to make the query when we actually have the query.
+    }
+
+
+
 }

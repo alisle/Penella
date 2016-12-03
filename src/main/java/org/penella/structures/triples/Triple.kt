@@ -1,4 +1,4 @@
-package org.penella
+package org.penella.structures.triples
 
 import net.openhft.hashing.LongHashFunction
 import java.io.Serializable
@@ -19,11 +19,14 @@ import java.io.Serializable
  *
  * Created by alisle on 9/30/16.
  */
-class Triple(val subject: String, val property: String, val obj: String) : Serializable {
-    val seed : Long = 665445839
-    val hashSubject = LongHashFunction.xx_r39(seed).hashChars(subject)
-    val hashProperty = LongHashFunction.xx_r39(seed).hashChars(property)
-    val hashObj = LongHashFunction.xx_r39(seed).hashChars(obj)
+
+class Triple(val subject: String, val property: String, val obj: String) : HashTriple(
+        hashSubject = LongHashFunction.xx_r39(seed).hashChars(subject),
+        hashProperty = LongHashFunction.xx_r39(seed).hashChars(property),
+        hashObj = LongHashFunction.xx_r39(seed).hashChars(obj)
+
+    ) {
+
     val hash = LongHashFunction.xx_r39(seed).hashChars(this.toString())
 
 

@@ -30,7 +30,7 @@ class BSTreeTest {
     fun testPerformance() {
         val seed : Long = 665445839
         val max = 10000000
-        val tree : BSTree<String> = BSTree()
+        val tree : BSTree<Long, String> = BSTree()
         var start = System.currentTimeMillis()
 
         log.warn("Starting the creation of the tree")

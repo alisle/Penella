@@ -18,20 +18,24 @@ import org.slf4j.LoggerFactory
  *
  * Created by alisle on 10/17/16.
  */
-class BSTree<T> {
+
+open class BSTreeNode<I : Comparable<I>, P>(val index : I, var payload : P ) {
+    var parent: BSTreeNode<I, P>? = null
+    var left: BSTreeNode<I, P>? = null
+    var right: BSTreeNode<I, P>? = null
+}
+
+
+
+open class BSTree<I : Comparable<I>, P> {
     companion object {
         private val log: Logger = LoggerFactory.getLogger(BSTree::class.java)
     }
 
-    class Node<T>(val index : Long, var payload : T ) {
-        var left : Node<T>? = null
-        var right: Node<T>? = null
-        val parent: Node<T>? = null
-    }
 
-    private var root : Node<T>? = null
+    private var root : BSTreeNode<I,P>? = null
 
-    private fun add(parent: Node<T>?, index: Long, payload : T) {
+    private fun add(parent: BSTreeNode<I, P>?, index: I, payload : P, replace : Boolean = true) : P {
         var node = parent
         var found : Boolean = false
 
@@ -41,40 +45,63 @@ class BSTree<T> {
                     if(node?.left != null) {
                         node = node!!.left
                     } else {
-                        node?.left = Node(index, payload)
-                        found = true
+                        node?.left = BSTreeNode(index, payload)
+                        node?.left?.parent = node
+                        return payload
                     }
                 }
                 0 -> {
-                    log.debug("Replacing $index")
-                    node!!.payload = payload
-                    found = true
+                    when(replace) {
+                        true -> {
+                            if(log.isDebugEnabled) log.debug("Replacing $index")
+                            node!!.payload = payload
+                            return payload
+                        }
+                        false -> {
+                            return node!!.payload
+                        }
+                    }
                 }
                 1 -> {
                     if(node?.right != null) {
                         node = node!!.right
                     } else {
-                        node?.right = Node(index, payload)
-                        found = true
+                        node?.right = BSTreeNode(index, payload)
+                        node?.right?.parent = node
+                        return payload
                     }
                 }
             }
         }
+
+        return payload
     }
 
-    fun add(index: Long, payload: T) {
-        if(log.isTraceEnabled) {
-            //log.trace("Adding index: $index, with payload: $payload")
+    fun addOrGet(index: I, payload: P) : P {
+        if(log.isTraceEnabled) log.trace("Getting or Adding index: $index, with payload: $payload")
+
+        when(root) {
+            null -> {
+                root = BSTreeNode(index, payload)
+                return payload
+            }
+            else -> {
+                return this.add(root, index, payload, false)
+            }
         }
+    }
+
+    fun add(index: I, payload: P) {
+        if(log.isTraceEnabled) log.trace("Adding index: $index, with payload: $payload")
 
         if(root == null) {
-            root = Node(index, payload)
+            root = BSTreeNode(index, payload)
         } else {
             this.add(root, index, payload)
         }
     }
 
-    fun get(index: Long) : T? {
+    fun get(index: I) : P? {
         var parent = root
         while(parent != null) {
             when (index.compareTo(parent.index)) {
@@ -86,4 +113,32 @@ class BSTree<T> {
 
         return null
     }
+    private fun all(root : BSTreeNode<I, P>, list : MutableList<Pair<I,P>>)  {
+        if(root.left != null) {
+            all(root.left!!, list)
+        }
+
+        list.add(Pair(root.index, root.payload))
+
+        if(root.right != null) {
+            all(root.right!!, list)
+        }
+
+    }
+
+    fun all() : List<Pair<I,P>>
+    {
+        val list : MutableList<Pair<I,P>> = mutableListOf()
+
+        if(root != null) {
+            all(root!!, list)
+        }
+
+        return list
+    }
+
+    fun allPayloads() : List<P> {
+        return all().map { x -> x.second }
+    }
+
 }
