@@ -22,7 +22,8 @@ import org.penella.query.IncompleteResultSet
  */
 
 abstract class BSTreeIndex(val index: IndexType) : IIndex {
-    val rootTree = FirstLayer(index)
+    protected val rootTree = FirstLayer(index)
+
 
     protected fun addTriple(first: Long, second: Long, third: Long) {
         rootTree.add(first, second, third)

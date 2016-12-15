@@ -1,8 +1,6 @@
-package org.penella.index
+package org.penella.messages
 
-import org.penella.query.IncompleteResultSet
-import org.penella.structures.triples.HashTriple
-import org.penella.structures.triples.TripleType
+import org.penella.Status
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,12 +15,9 @@ import org.penella.structures.triples.TripleType
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by alisle on 9/27/16.
+ * Created by alisle on 12/12/16.
  */
+data class CreateDB(val name : String, val shards : Int)
+data class CreateDBStatus(val name: String, val status: Status, val statusMsg : String = "")
+data class ListDB(val names : Array<String>)
 
-interface IIndex {
-    fun add(triple: HashTriple)
-    fun get(first: TripleType, value: Long) : IncompleteResultSet
-    fun get(first: TripleType, second: TripleType, firstValue: Long, secondValue: Long) : IncompleteResultSet
-
-}

@@ -1,8 +1,6 @@
-package org.penella.index
+package org.penella.shards
 
-import org.penella.query.IncompleteResultSet
-import org.penella.structures.triples.HashTriple
-import org.penella.structures.triples.TripleType
+
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,12 +15,7 @@ import org.penella.structures.triples.TripleType
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by alisle on 9/27/16.
+ * Created by alisle on 12/4/16.
  */
-
-interface IIndex {
-    fun add(triple: HashTriple)
-    fun get(first: TripleType, value: Long) : IncompleteResultSet
-    fun get(first: TripleType, second: TripleType, firstValue: Long, secondValue: Long) : IncompleteResultSet
-
+class ShardVertical {
 }

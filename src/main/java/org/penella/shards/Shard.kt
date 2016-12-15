@@ -1,8 +1,8 @@
 package org.penella.shards
 
-import io.vertx.core.Future
 import org.penella.index.IIndexFactory
 import org.penella.index.IndexType
+import org.penella.index.IndexVertical
 import org.penella.query.IQuery
 import org.penella.query.IncompleteResultSet
 import org.penella.structures.triples.HashTriple
@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicLong
  *
  * Created by alisle on 11/1/16.
  */
-class Shard constructor(private val indexFactory: IIndexFactory) : IShard  {
+class Shard constructor(private val indexFactory: IIndexFactory) : IShard {
     companion object {
         private val log: Logger = LoggerFactory.getLogger(Shard::class.java)
     }
@@ -45,5 +45,6 @@ class Shard constructor(private val indexFactory: IIndexFactory) : IShard  {
         if(log.isDebugEnabled)  log.debug("Inserting triple: $triple")
         counter.incrementAndGet()
         indexes.forEach { x -> x.add(triple) }
+
     }
 }
