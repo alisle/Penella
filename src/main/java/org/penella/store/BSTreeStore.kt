@@ -3,6 +3,7 @@ package org.penella.store
 import net.openhft.hashing.LongHashFunction
 import org.penella.structures.triples.Triple
 import org.penella.structures.BSTree
+import org.penella.structures.triples.HashTriple
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,9 +35,21 @@ open class BSTreeStore(seed: Long) : IStore {
     }
 
     override fun add(triple: Triple) {
-        store.add(triple.hashSubject, triple.subject)
-        store.add(triple.hashProperty, triple.property)
-        store.add(triple.hashObj, triple.obj)
+        store.add(triple.hashTriple.hashSubject, triple.subject)
+        store.add(triple.hashTriple.hashProperty, triple.property)
+        store.add(triple.hashTriple.hashObj, triple.obj)
+    }
+
+    override fun get(hashTriple: HashTriple): Triple? {
+        val subject = get(hashTriple.hashSubject)
+        val property = get(hashTriple.hashProperty)
+        val obj = get(hashTriple.hashObj)
+
+        if(subject == null || property == null ||  obj == null) {
+            return null
+        } else {
+            return Triple(subject, property, obj)
+        }
     }
 
     override fun get(value: Long) : String? {

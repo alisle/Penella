@@ -34,7 +34,7 @@ class ObjectBSTreeIndexTest {
         index.add(HashTriple(21L, 22L, 23L))
 
         try {
-            val triples = index.get(TripleType.OBJECT, TripleType.PROPERTY, 1L, 2L).triples
+            index.get(TripleType.OBJECT, TripleType.PROPERTY, 1L, 2L).triples
 
         } catch (e : InvalidIndexRequest) {
             return
@@ -52,7 +52,7 @@ class ObjectBSTreeIndexTest {
         index.add(HashTriple(21L, 22L, 23L))
 
         try {
-            val tiples = index.get(TripleType.PROPERTY, 1L).triples;
+            index.get(TripleType.PROPERTY, 1L).triples;
         } catch( e: IncorrectIndexRequest) {
             return
         }

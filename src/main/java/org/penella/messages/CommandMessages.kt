@@ -1,6 +1,6 @@
 package org.penella.messages
 
-import org.penella.Status
+import io.vertx.core.json.Json
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@ import org.penella.Status
  *
  * Created by alisle on 12/12/16.
  */
+
 data class CreateDB(val name : String, val shards : Int)
-data class CreateDBStatus(val name: String, val status: Status, val statusMsg : String = "")
 data class ListDB(val names : Array<String>)
 

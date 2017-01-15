@@ -1,10 +1,13 @@
 package org.penella.database
 
-import org.penella.importers.IDBImporter
+import org.penella.index.IndexType
+import org.penella.messages.AddTriple
+import org.penella.messages.BulkAddTriples
+import org.penella.messages.RawQuery
 import org.penella.query.IQuery
 import org.penella.query.IResultSet
+import org.penella.structures.triples.HashTriple
 import org.penella.structures.triples.Triple
-
 
 
 /**
@@ -24,8 +27,9 @@ import org.penella.structures.triples.Triple
  * Created by alisle on 9/27/16.
  */
 interface IDatabase {
-    fun processQuery(query : IQuery) : IResultSet
-    fun build(importer : IDBImporter) : Boolean
-    fun add(triple: Triple)
+    fun handle(add: AddTriple)
+    fun handle(bulkAdd: BulkAddTriples)
+    fun handle(query: RawQuery) : Array<Triple?>
+    fun get(indexType: IndexType, triple: HashTriple) : Set<HashTriple>
     fun size() : Long
 }

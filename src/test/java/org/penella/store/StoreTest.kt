@@ -42,14 +42,25 @@ abstract class StoreTest {
         val triple = Triple("Subject", "Property", "Object")
         store.add(triple)
 
-        assertEquals(triple.subject, store.get(triple.hashSubject))
-        assertEquals(triple.property, store.get(triple.hashProperty))
-        assertEquals(triple.obj, store.get(triple.hashObj))
+        assertEquals(triple.subject, store.get(triple.hashTriple.hashSubject))
+        assertEquals(triple.property, store.get(triple.hashTriple.hashProperty))
+        assertEquals(triple.obj, store.get(triple.hashTriple.hashObj))
+    }
+
+    @Test
+    fun testGetTriple() {
+        val store = createStore()
+        val triple = Triple("Subject", "Property", "Object")
+        store.add(triple)
+
+        val newTriple = store.get(triple.hashTriple)
+        assertEquals(triple, newTriple)
+
     }
 
     @Test
     fun testTripleInsertPerformance() {
-        val max = 1000000
+        val max = 1000
         var start = System.currentTimeMillis()
         var store = createStore()
 
@@ -68,7 +79,7 @@ abstract class StoreTest {
 
     @Test
     fun testStringInsertPerformance() {
-        val max = 1000000
+        val max = 10000
         var start = System.currentTimeMillis()
         var store = createStore()
 

@@ -1,5 +1,6 @@
-package org.penella.structures.triples
+package org.penella.messages
 
+import org.penella.structures.triples.Triple
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,13 +15,9 @@ package org.penella.structures.triples
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by alisle on 11/18/16.
+ *
+ * Created by alisle on 12/22/16.
  */
-
-class InvalidNoneTripleType : Exception("Invalid None for TripleType!")
-enum class TripleType {
-    SUBJECT,
-    PROPERTY,
-    OBJECT,
-    NONE
-}
+data class AddTriple(val triple: Triple)
+data class BulkAddTriples(val triples: Array<Triple>)
+data class RawQuery(val outputs : Array<String>, val variables : Array<String>, val triples : Array<Triple>)

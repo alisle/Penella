@@ -1,5 +1,6 @@
 package org.penella.shards
 
+import org.penella.index.IndexType
 import org.penella.query.IQuery
 import org.penella.query.IncompleteResultSet
 import org.penella.structures.triples.HashTriple
@@ -22,6 +23,6 @@ import org.penella.structures.triples.Triple
  */
 interface IShard {
     fun size() : Long
-    fun query(query: IQuery) : IncompleteResultSet
+    fun get(indexType: IndexType, triple: HashTriple) : IncompleteResultSet
     fun add(triple: HashTriple)
 }

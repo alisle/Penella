@@ -1,5 +1,4 @@
-package org.penella.structures.triples
-
+package org.penella
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,13 +13,8 @@ package org.penella.structures.triples
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by alisle on 11/18/16.
+ * Created by alisle on 1/13/17.
  */
-
-class InvalidNoneTripleType : Exception("Invalid None for TripleType!")
-enum class TripleType {
-    SUBJECT,
-    PROPERTY,
-    OBJECT,
-    NONE
+enum class MailBoxes(val mailbox : String) {
+    NODE_CREATE_DB("node.create.db")
 }

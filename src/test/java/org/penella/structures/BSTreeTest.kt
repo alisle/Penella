@@ -27,9 +27,9 @@ class BSTreeTest {
     }
 
     @Test
-    fun testPerformance() {
+    fun testInsertGet() {
         val seed : Long = 665445839
-        val max = 10000000
+        val max = 1000
         val tree : BSTree<Long, String> = BSTree()
         var start = System.currentTimeMillis()
 

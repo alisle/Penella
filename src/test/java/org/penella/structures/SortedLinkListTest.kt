@@ -57,29 +57,4 @@ class SortedLinkListTest {
         assertEquals(1L, list.remove())
     }
 
-    @Test
-    fun testPerformance() {
-        val max = 100000
-        val list : SortedLinkList<Long> = SortedLinkList()
-        var start = System.currentTimeMillis()
-
-        log.warn("Adding " + max + " instances")
-        for( x in 1L..max ) {
-            if(x % 10000L == 0L) {
-                log.warn("Adding " + x)
-
-            }
-            list.add(x)
-        }
-        log.warn("Finished in " + (System.currentTimeMillis() - start) / 1000 + " secs")
-
-        start = System.currentTimeMillis()
-        log.warn("Reading " + max + " instances")
-        while(list.length() > 0) {
-            list.pop()
-        }
-        log.warn("Finished in " + (System.currentTimeMillis() - start) / 1000 + " secs")
-
-    }
-
 }

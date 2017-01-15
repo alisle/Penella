@@ -1,5 +1,9 @@
 package org.penella.structures.triples
 
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import io.vertx.core.json.Json
+import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 import org.penella.structures.triples.Triple
 import kotlin.test.assertEquals
@@ -23,6 +27,12 @@ import kotlin.test.assertTrue
  * Created by alisle on 10/7/16.
  */
 class TripleTest {
+
+    @Before
+    fun setup() {
+        Json.mapper.registerModule(KotlinModule())
+    }
+
     @Test
     fun testHash() {
         val first  : Triple = Triple("Subject", "Object", "Property")
@@ -32,15 +42,27 @@ class TripleTest {
         assertEquals(first.hash, third.hash)
         assertNotEquals(first.hash, second.hash)
 
-        assertEquals(first.hashSubject, third.hashSubject)
-        assertEquals(first.hashObj, third.hashObj)
-        assertEquals(first.hashProperty, third.hashProperty)
+        assertEquals(first.hashTriple.hashSubject, third.hashTriple.hashSubject)
+        assertEquals(first.hashTriple.hashObj, third.hashTriple.hashObj)
+        assertEquals(first.hashTriple.hashProperty, third.hashTriple.hashProperty)
 
 
-        assertNotEquals(first.hashSubject, second.hashSubject)
-        assertNotEquals(first.hashObj, second.hashObj)
-        assertNotEquals(first.hashProperty, second.hashProperty)
+        assertNotEquals(first.hashTriple.hashSubject, second.hashTriple.hashSubject)
+        assertNotEquals(first.hashTriple.hashObj, second.hashTriple.hashObj)
+        assertNotEquals(first.hashTriple.hashProperty, second.hashTriple.hashProperty)
     }
+
+    @Test
+    fun testGetHash() {
+        val first = "Hello World!"
+        val second = "Hello World!"
+
+        val firstHash = Triple.getHash(first)
+        val secondHash = Triple.getHash(second)
+
+        assertEquals(firstHash, secondHash)
+    }
+
 
     @Test
     fun testAccessors() {
@@ -59,5 +81,26 @@ class TripleTest {
 
         assertTrue(first.equals(third))
         assertFalse(first.equals(second))
+    }
+
+    @Test
+    fun testJSON() {
+
+        val triple = Triple("Subject", "Property", "Object")
+        val json = triple.toJSON()
+
+        Assert.assertTrue(json.length > 0)
+
+        val newTriple = Triple.fromJSON(json)
+
+        Assert.assertEquals(newTriple, triple)
+    }
+
+    @Test
+    fun testIncompleteJSON() {
+        Json.mapper.registerModule(KotlinModule())
+        val json = "{\"subject\":\"Subject\",\"property\":\"Property\",\"object\":\"Object\"}";
+        val triple = Triple.fromJSON(json)
+        Assert.assertEquals(triple, Triple("Subject", "Property", "Object"));
     }
 }

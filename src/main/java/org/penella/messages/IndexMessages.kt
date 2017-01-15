@@ -2,6 +2,7 @@ package org.penella.messages
 
 import org.penella.structures.triples.HashTriple
 import org.penella.structures.triples.TripleType
+import org.penella.structures.triples.Triple
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +19,7 @@ import org.penella.structures.triples.TripleType
  *
  * Created by alisle on 12/4/16.
  */
-data class AddTriple(val triple: HashTriple)
+
 data class GetSingleResult(val firstType: TripleType, val firstValue: Long)
-data class GetDoublerResult(val firstType: TripleType, val secondType: TripleType, val firstValue: Long, val secondValue: Long)
+data class GetDoubleResult(val firstType: TripleType, val secondType: TripleType, val firstValue: Long, val secondValue: Long)
 data class GetTripleResult(val first: Long, val second: Long, val third: Long)

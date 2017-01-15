@@ -59,13 +59,13 @@ class PropertyObjectBSTreeIndexTest {
         index.add(HashTriple(21L, 22L, 23L))
 
         try {
-            val tiples = index.get(TripleType.OBJECT, 1L).triples;
+            index.get(TripleType.OBJECT, 1L).triples;
         } catch( e: IncorrectIndexRequest) {
             return
         }
 
         try {
-            val tiples = index.get(TripleType.PROPERTY, TripleType.SUBJECT, 1L, 2L).triples;
+            index.get(TripleType.PROPERTY, TripleType.SUBJECT, 1L, 2L).triples;
         } catch( e: IncorrectIndexRequest) {
             return
         }

@@ -2,7 +2,7 @@
   "id": "http://github.com/alisle/Penella",
   "$schema": "http://json-schema.org/draft-04/schema",
   "type":"object",
-  "description":"Add a triple",
+  "description":"Defines a triple",
   "required": ["subject", "property", "object"],
   "properties": {
     "subject": {

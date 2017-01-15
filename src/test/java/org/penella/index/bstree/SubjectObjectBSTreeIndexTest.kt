@@ -61,13 +61,13 @@ class SubjectObjectBSTreeIndexTest {
         index.add(HashTriple(21L, 22L, 23L))
 
         try {
-            val tiples = index.get(TripleType.OBJECT, 1L).triples;
+            index.get(TripleType.OBJECT, 1L).triples;
         } catch( e: IncorrectIndexRequest) {
             return
         }
 
         try {
-            val tiples = index.get(TripleType.SUBJECT, TripleType.PROPERTY, 1L, 2L).triples;
+            index.get(TripleType.SUBJECT, TripleType.PROPERTY, 1L, 2L).triples;
         } catch( e: IncorrectIndexRequest) {
             return
         }

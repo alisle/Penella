@@ -67,8 +67,8 @@ class LinkedListTest {
     }
 
     @Test
-    fun testRandomGetPerformance() {
-        val max = 100000
+    fun testRandomGet() {
+        val max = 1000
         val list : LinkedList<Long> = LinkedList()
         var start = System.currentTimeMillis()
 
@@ -90,26 +90,5 @@ class LinkedListTest {
 
 
     }
-    @Test
-    fun testPushPopPerformance() {
-        val max = 10000000
-        val list : LinkedList<Long> = LinkedList()
-        var start = System.currentTimeMillis()
-
-        log.warn("Adding " + max + " instances")
-        for( x in 1L..max ) {
-            list.push(x)
-        }
-        log.warn("Finished in " + (System.currentTimeMillis() - start) / 1000 + " secs")
-
-        start = System.currentTimeMillis()
-        log.warn("Reading " + max + " instances")
-        while(list.length() > 0) {
-            list.pop()
-        }
-        log.warn("Finished in " + (System.currentTimeMillis() - start) / 1000 + " secs")
-
-    }
-
 }
 

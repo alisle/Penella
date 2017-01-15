@@ -1,11 +1,12 @@
-package org.penella
+package org.penella.node
 
 import org.penella.database.DatabaseImpl
 import org.penella.database.IDatabase
 import org.penella.index.IIndexFactory
 import org.penella.messages.CreateDB
-import org.penella.messages.CreateDBStatus
 import org.penella.messages.ListDB
+import org.penella.messages.Status
+import org.penella.messages.StatusMessage
 import org.penella.store.IStore
 import java.util.*
 
@@ -27,14 +28,14 @@ import java.util.*
 class Node(private val store: IStore, private val indexFactory: IIndexFactory) {
     val databases = HashMap<String, IDatabase>()
 
-    fun createDB(db : CreateDB) : CreateDBStatus {
+    fun createDB(db : CreateDB) : StatusMessage {
         if( databases.containsKey(db.name)) {
-            return CreateDBStatus(db.name, Status.FAILED, "Database with that name already exists!")
+            return StatusMessage(Status.FAILED, "Unable to create ${db.name} as a DB with that name already exists")
         }
 
         databases.put(db.name, DatabaseImpl(db.name, store, indexFactory, db.shards))
 
-        return CreateDBStatus(db.name, Status.SUCESSFUL)
+        return StatusMessage(Status.SUCESSFUL, "${db.name} has successfully been created")
     }
 
     fun listDB() : ListDB {

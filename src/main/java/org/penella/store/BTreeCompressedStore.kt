@@ -3,6 +3,7 @@ package org.penella.store
 import net.openhft.hashing.LongHashFunction
 import org.penella.smaz.Smaz
 import org.penella.structures.BSTree
+import org.penella.structures.triples.HashTriple
 import org.penella.structures.triples.Triple
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -45,9 +46,21 @@ class BTreeCompressedStore(seed: Long, val maxStringSize : Int) : IStore {
     override fun add(triple: Triple) {
         //if(log.isTraceEnabled) log.trace("Adding Triple:" + triple)
 
-        store.add(triple.hashSubject, compressor.compressString(triple.subject))
-        store.add(triple.hashProperty, compressor.compressString(triple.property))
-        store.add(triple.hashObj, compressor.compressString(triple.obj))
+        store.add(triple.hashTriple.hashSubject, compressor.compressString(triple.subject))
+        store.add(triple.hashTriple.hashProperty, compressor.compressString(triple.property))
+        store.add(triple.hashTriple.hashObj, compressor.compressString(triple.obj))
+    }
+
+    override fun get(hashTriple: HashTriple): Triple? {
+        val subject = get(hashTriple.hashSubject)
+        val property = get(hashTriple.hashProperty)
+        val obj = get(hashTriple.hashObj)
+
+        if(subject == null || property == null ||  obj == null) {
+            return null
+        } else {
+            return Triple(subject, property, obj)
+        }
     }
 
     override fun get(value: Long) : String? {

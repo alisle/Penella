@@ -42,11 +42,11 @@ open class BSTree<I : Comparable<I>, P> {
         while(!found) {
             when(index.compareTo(node!!.index)) {
                 -1 -> {
-                    if(node?.left != null) {
-                        node = node!!.left
+                    if(node.left != null) {
+                        node = node.left
                     } else {
-                        node?.left = BSTreeNode(index, payload)
-                        node?.left?.parent = node
+                        node.left = BSTreeNode(index, payload)
+                        node.left?.parent = node
                         return payload
                     }
                 }
@@ -54,20 +54,20 @@ open class BSTree<I : Comparable<I>, P> {
                     when(replace) {
                         true -> {
                             if(log.isDebugEnabled) log.debug("Replacing $index")
-                            node!!.payload = payload
+                            node.payload = payload
                             return payload
                         }
                         false -> {
-                            return node!!.payload
+                            return node.payload
                         }
                     }
                 }
                 1 -> {
-                    if(node?.right != null) {
-                        node = node!!.right
+                    if(node.right != null) {
+                        node = node.right
                     } else {
-                        node?.right = BSTreeNode(index, payload)
-                        node?.right?.parent = node
+                        node.right = BSTreeNode(index, payload)
+                        node.right?.parent = node
                         return payload
                     }
                 }

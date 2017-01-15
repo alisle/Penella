@@ -1,5 +1,6 @@
 package org.penella.store
 
+import org.penella.structures.triples.HashTriple
 import org.penella.structures.triples.Triple
 
 /**
@@ -21,5 +22,6 @@ interface IStore {
     fun add(value: String) : Long
     fun add(triple: Triple)
     fun get(value: Long) : String?
+    fun get(hashTriple: HashTriple) : Triple?
     fun generateHash(value: String): Long
 }

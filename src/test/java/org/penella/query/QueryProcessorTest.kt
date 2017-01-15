@@ -1,19 +1,16 @@
-package org.penella.database
+package org.penella.query
 
-import org.junit.Test
 import org.junit.Assert
-import org.penella.index.IndexType
-
+import org.junit.Test
+import org.penella.database.DatabaseImpl
+import org.penella.database.IDatabase
 import org.penella.index.bstree.BSTreeIndexFactory
 import org.penella.messages.AddTriple
 import org.penella.messages.BulkAddTriples
 import org.penella.messages.RawQuery
-import org.penella.query.QueryProcessor
 import org.penella.store.BSTreeStore
-import org.penella.structures.triples.HashTriple
 import org.penella.structures.triples.Triple
 import kotlin.test.assertEquals
-
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,40 +25,11 @@ import kotlin.test.assertEquals
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by alisle on 12/2/16.
+ * Created by alisle on 1/3/17.
  */
-
-class DatabaseImplTest {
+class QueryProcessorTest {
     @Test
-    fun testAddTriple() {
-        val store = BSTreeStore(665445839L)
-        val db : IDatabase = DatabaseImpl("Test DB", store, BSTreeIndexFactory(), 10)
-        (0L until 10000L).forEach { x -> db.handle(AddTriple(Triple("Subject " + x, "Property " + x, "Object " + x))) }
-        Assert.assertEquals(10000L, db.size())
-    }
-
-    @Test
-    fun testBulkAdd() {
-        val store = BSTreeStore(665445839L)
-        val db : IDatabase = DatabaseImpl("Test DB", store, BSTreeIndexFactory(), 10)
-        val bulkAdd  = BulkAddTriples((0L until 10000L).map { x -> Triple("Subject " + x, "Property " + x, "Object " + x) }.toTypedArray())
-        db.handle(bulkAdd)
-
-        Assert.assertEquals(10000L, db.size())
-    }
-
-    @Test
-    fun testGet() {
-        val store = BSTreeStore(665445839L)
-        val db : IDatabase = DatabaseImpl("Test DB", store, BSTreeIndexFactory(), 10)
-        db.handle(BulkAddTriples((0L until 10000L).map { x -> Triple("Subject " + x, "Property " + x, "Object " + x) }.toTypedArray()))
-        val triples = db.get(IndexType.SPO, HashTriple(Triple.getHash("Subject 10"), Triple.getHash("Property 10"), 0L))
-        assertEquals(triples.size, 1);
-        assertEquals(triples.distinct()[0].hashSubject, Triple.getHash("Subject 10"))
-    }
-
-    @Test
-    fun testQuery() {
+    fun testSimple() {
         val store = BSTreeStore(665445839L)
         val db : IDatabase = DatabaseImpl("Test DB", store, BSTreeIndexFactory(), 10)
         val processor = QueryProcessor(db, store)

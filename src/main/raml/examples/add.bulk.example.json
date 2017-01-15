@@ -1,0 +1,22 @@
+[
+  {
+    "subject" : "Shakespeare",
+    "property" : "authorOf",
+    "object" : "Titus"
+  },
+  {
+    "subject" : "Shakespeare",
+    "property" : "authorOf",
+    "object" : "Romeo and Juliet"
+  },
+  {
+    "subject" : "Shakespeare",
+    "property" : "authorOf",
+    "object" : "Macbeth"
+  },
+  {
+    "subject" : "Shakespeare",
+    "property" : "authorOf",
+    "object" : "King Lear"
+  }
+]

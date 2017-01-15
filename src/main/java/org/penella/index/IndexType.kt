@@ -1,5 +1,7 @@
 package org.penella.index
 
+import org.penella.structures.triples.HashTriple
+import org.penella.structures.triples.QueryTriple
 import org.penella.structures.triples.TripleType
 
 
@@ -53,11 +55,13 @@ enum class IndexType(val ID: Int, val mask: Int) {
             }
         }
 
-        fun getIndex(subject: String?, property: String, obj: String?): IndexType {
+        fun getIndex(hashTriple : HashTriple) = getIndex(hashTriple.hashSubject, hashTriple.hashProperty, hashTriple.hashObj)
+
+        fun getIndex(subject: Long, property: Long, obj: Long): IndexType {
             var mask = 0b0
-            if (!subject.isNullOrEmpty()) mask += 0b100
-            if (!property.isNullOrEmpty()) mask += 0b010
-            if (!obj.isNullOrEmpty()) mask += 0b001
+            if (subject != 0L) mask += 0b100
+            if (property != 0L) mask += 0b010
+            if (obj != 0L) mask += 0b001
 
             return getIndexByMask(mask)
         }

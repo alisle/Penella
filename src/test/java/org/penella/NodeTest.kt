@@ -4,6 +4,8 @@ import org.junit.Assert
 import org.junit.Test
 import org.penella.index.bstree.BSTreeIndexFactory
 import org.penella.messages.CreateDB
+import org.penella.messages.Status
+import org.penella.node.Node
 import org.penella.store.BSTreeStore
 
 /**
@@ -33,11 +35,9 @@ class NodeTest {
         val response = node.createDB(createMsg)
 
         Assert.assertEquals(response.status, Status.SUCESSFUL)
-        Assert.assertEquals(response.name, "Test")
 
         val badResponse = node.createDB(createMsg)
         Assert.assertEquals(badResponse.status, Status.FAILED)
-        Assert.assertEquals(badResponse.name, "Test")
     }
 
     @Test

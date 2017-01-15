@@ -28,6 +28,7 @@ open class HashTriple(val hashSubject : Long, val hashProperty : Long, val hashO
                     TripleType.SUBJECT -> HashTriple(x, 0L, 0L)
                     TripleType.PROPERTY -> HashTriple(0L, x, 0L)
                     TripleType.OBJECT -> HashTriple(0L, 0L, x)
+                    TripleType.NONE -> throw InvalidNoneTripleType()
                 }
             }.toTypedArray()
         }
@@ -37,6 +38,7 @@ open class HashTriple(val hashSubject : Long, val hashProperty : Long, val hashO
                 TripleType.OBJECT -> return arrayOf(HashTriple(hashSubject = 0L, hashProperty = 0L, hashObj = value))
                 TripleType.PROPERTY -> return arrayOf(HashTriple(hashSubject = 0L, hashProperty = value, hashObj = 0L))
                 TripleType.SUBJECT -> return arrayOf(HashTriple(hashSubject = value, hashProperty = 0L, hashObj = 0L))
+                TripleType.NONE -> throw InvalidNoneTripleType()
             }
         }
 
@@ -46,6 +48,8 @@ open class HashTriple(val hashSubject : Long, val hashProperty : Long, val hashO
                     TripleType.OBJECT -> HashTriple(hashSubject = x.hashSubject, hashProperty = x.hashProperty, hashObj = value )
                     TripleType.PROPERTY -> HashTriple(hashSubject = x.hashSubject, hashProperty = value, hashObj = x.hashObj )
                     TripleType.SUBJECT -> HashTriple(hashSubject = value, hashProperty = x.hashProperty, hashObj = x.hashObj )
+                    TripleType.NONE -> throw InvalidNoneTripleType()
+
                 }
             }.toTypedArray()
         }
@@ -68,6 +72,11 @@ open class HashTriple(val hashSubject : Long, val hashProperty : Long, val hashO
         result = 31 * result + hashObj.hashCode()
         return result
     }
+
+    override fun toString(): String {
+        return "HashTriple(hashSubject=$hashSubject, hashProperty=$hashProperty, hashObj=$hashObj)"
+    }
+
 
 }
 

@@ -5,8 +5,7 @@ import io.vertx.core.Future
 import io.vertx.core.Handler
 import io.vertx.core.eventbus.Message
 
-import org.penella.messages.AddTriple
-import org.penella.messages.GetDoublerResult
+import org.penella.messages.GetDoubleResult
 import org.penella.messages.GetSingleResult
 
 /**
@@ -31,9 +30,8 @@ class IndexVertical(dbName: String, shardName: String, indexName: String, privat
     private val mailboxGetDoubleResult = mailBoxStub + "GetDoubleResult"
 
     override fun start(startFuture: Future<Void>?) {
-        vertx.eventBus().consumer(mailBoxAddTriple, Handler { message: Message<AddTriple> -> index.add(message.body().triple) })
         vertx.eventBus().consumer(mailBoxGetSingleResult, Handler { message: Message<GetSingleResult> -> index.get(message.body().firstType, message.body().firstValue) })
-        vertx.eventBus().consumer(mailboxGetDoubleResult, Handler { message: Message<GetDoublerResult> -> index.get(message.body().firstType, message.body().secondType, message.body().firstValue, message.body().secondValue ) })
+        vertx.eventBus().consumer(mailboxGetDoubleResult, Handler { message: Message<GetDoubleResult> -> index.get(message.body().firstType, message.body().secondType, message.body().firstValue, message.body().secondValue ) })
 
         startFuture!!.complete()
     }

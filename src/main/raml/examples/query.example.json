@@ -1,0 +1,15 @@
+{
+  "query": {
+    "variables" : [
+      "?author",
+      "?book"
+    ],
+    "triples" : [
+      {
+        "subject": "?author",
+        "property": "authorOf",
+        "object": "?book"
+      }
+    ]
+  }
+}

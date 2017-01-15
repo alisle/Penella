@@ -1,7 +1,9 @@
 package org.penella.structures.triples
 
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.vertx.core.json.Json
 import net.openhft.hashing.LongHashFunction
-import java.io.Serializable
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,15 +22,22 @@ import java.io.Serializable
  * Created by alisle on 9/30/16.
  */
 
-class Triple(val subject: String, val property: String, val obj: String) : HashTriple(
-        hashSubject = LongHashFunction.xx_r39(seed).hashChars(subject),
-        hashProperty = LongHashFunction.xx_r39(seed).hashChars(property),
-        hashObj = LongHashFunction.xx_r39(seed).hashChars(obj)
+open class Triple(val subject: String, val property: String, @JsonProperty("object") val obj: String)  {
 
-    ) {
+    @JsonIgnore val hashTriple = HashTriple(LongHashFunction.xx_r39(HashTriple.seed).hashChars(subject),
+            LongHashFunction.xx_r39(HashTriple.seed).hashChars(property),
+            LongHashFunction.xx_r39(HashTriple.seed).hashChars(obj))
 
-    val hash = LongHashFunction.xx_r39(seed).hashChars(this.toString())
+    companion object {
+        fun fromJSON(json: String) = Json.decodeValue(json, Triple::class.java)
+        fun getHash(value: String) = LongHashFunction.xx_r39(HashTriple.seed).hashChars(value)
+    }
 
+    @JsonIgnore
+    val hash = LongHashFunction.xx_r39(HashTriple.seed).hashChars(this.toString())
+
+
+    fun toJSON() = Json.encode(this)
 
     override fun toString(): String {
         return "'$subject'-'$property'-'$obj'."
@@ -36,15 +45,17 @@ class Triple(val subject: String, val property: String, val obj: String) : HashT
 
     override fun equals(other: Any?): Boolean {
         if (other is Triple && other.hash == this.hash) {
-            if (other.hashSubject == this.hashSubject &&
-                    other.hashProperty == this.hashProperty &&
-                    other.hashObj == this.hashObj) {
+            if (other.hashTriple.hashSubject == this.hashTriple.hashSubject &&
+                    other.hashTriple.hashProperty == this.hashTriple.hashProperty &&
+                    other.hashTriple.hashObj == this.hashTriple.hashObj) {
                 return true
             }
         }
 
         return false
     }
+
+
 
 
 }

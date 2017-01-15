@@ -3,9 +3,11 @@ package org.penella.shards
 import org.penella.index.IIndexFactory
 import org.penella.index.IndexType
 import org.penella.index.IndexVertical
+import org.penella.index.bstree.InvalidIndexRequest
 import org.penella.query.IQuery
 import org.penella.query.IncompleteResultSet
 import org.penella.structures.triples.HashTriple
+import org.penella.structures.triples.TripleType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicLong
@@ -37,8 +39,39 @@ class Shard constructor(private val indexFactory: IIndexFactory) : IShard {
 
     override fun size() = counter.get()
 
-    override fun query(query: IQuery): IncompleteResultSet {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun get(indexType: IndexType, triple: HashTriple): IncompleteResultSet {
+        if(log.isDebugEnabled) log.debug("Grabbing triple: $triple")
+
+        return when(indexType) {
+            IndexType.SPO -> {
+                if(triple.hashProperty != 0L) {
+                    indexes[indexType.ID].get(TripleType.SUBJECT, TripleType.PROPERTY, triple.hashSubject, triple.hashProperty)
+                } else {
+                    indexes[indexType.ID].get(TripleType.SUBJECT, triple.hashSubject)
+                }
+            }
+            IndexType.O -> {
+                if(triple.hashProperty == 0L && triple.hashSubject == 0L) {
+                    indexes[indexType.ID].get(TripleType.OBJECT, triple.hashObj)
+                } else {
+                    throw InvalidIndexRequest();
+                }
+            }
+            IndexType.PO -> {
+                if(triple.hashObj != 0L) {
+                    indexes[indexType.ID].get(TripleType.PROPERTY, TripleType.OBJECT, triple.hashProperty, triple.hashObj)
+                } else {
+                    indexes[indexType.ID].get(TripleType.PROPERTY, triple.hashProperty)
+                }
+            }
+            IndexType.SO -> {
+                if(triple.hashObj != 0L) {
+                    indexes[indexType.ID].get(TripleType.SUBJECT, TripleType.OBJECT, triple.hashSubject, triple.hashObj)
+                } else {
+                    indexes[indexType.ID].get(TripleType.SUBJECT, triple.hashSubject)
+                }
+            }
+        }
     }
 
     override fun add(triple: HashTriple) {
