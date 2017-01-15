@@ -76,6 +76,8 @@
             <groupId>org.penella</groupId>
             <artifactId>smaz</artifactId>
             <version>1.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/smaz-1.1.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
