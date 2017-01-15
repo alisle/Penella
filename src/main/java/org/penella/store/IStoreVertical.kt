@@ -6,6 +6,7 @@ import io.vertx.core.Handler
 import io.vertx.core.eventbus.Message
 import org.omg.PortableInterceptor.SUCCESSFUL
 import org.penella.MailBoxes
+import org.penella.codecs.*
 import org.penella.messages.*
 
 /**
@@ -27,26 +28,26 @@ import org.penella.messages.*
 class InvalidStoreSelected : Exception("Invalid Store Selected")
 class IStoreVertical : AbstractVerticle() {
     companion object {
-        private val STORE_TYPE = "type"
-        private val SEED = "seed"
-        private val MAX_STRING = "max_string"
+        val STORE_TYPE = "type"
+        val SEED = "seed"
+        val MAX_STRING = "max_string"
     }
 
-    val storeType : String
-    val storeSeed : Long
-    val storeMaxString : Int
-    val store : IStore
-
-    init {
-        storeType = config().getString(STORE_TYPE)
-        storeSeed = config().getLong(SEED)
-        storeMaxString = config().getInteger(MAX_STRING)
-        store =  when(storeType) {
+    val storeType : String by lazy {
+        config().getString(STORE_TYPE)
+    }
+    val storeSeed : Long by lazy {
+        config().getLong(SEED)
+    }
+    val storeMaxString : Int by lazy {
+        config().getInteger(MAX_STRING)
+    }
+    val store : IStore by lazy {
+        when(storeType) {
             "BSTreeStore" -> BSTreeStore(storeSeed)
             "BTreeCompressedStore" -> BTreeCompressedStore(storeSeed, storeMaxString)
             else -> throw InvalidStoreSelected()
         }
-
     }
 
     val storeAddTripleHandler = Handler<Message<StoreAddTriple>> { msg ->
@@ -74,7 +75,21 @@ class IStoreVertical : AbstractVerticle() {
         msg.reply(StoreGenerateHashResponse(hash))
     }
 
+    fun registerCodecs() {
+        vertx.eventBus().registerDefaultCodec(StoreAddString::class.java, StoreAddStringCodec())
+        vertx.eventBus().registerDefaultCodec(StoreAddStringResponse::class.java, StoreAddStringResponseCodec())
+        vertx.eventBus().registerDefaultCodec(StoreAddTriple::class.java, StoreAddTripleCodec())
+        vertx.eventBus().registerDefaultCodec(StoreGenerateHash::class.java, StoreGenerateHashCodec())
+        vertx.eventBus().registerDefaultCodec(StoreGenerateHashResponse::class.java, StoreGenerateHashResponseCodec())
+        vertx.eventBus().registerDefaultCodec(StoreGetHashTriple::class.java, StoreGetHashTripleCodec())
+        vertx.eventBus().registerDefaultCodec(StoreGetHashTripleResponse::class.java, StoreGetHashTripleResponseCodec())
+        vertx.eventBus().registerDefaultCodec(StoreGetString::class.java, StoreGetStringCodec())
+        vertx.eventBus().registerDefaultCodec(StoreGetStringResponse::class.java, StoreGetStringResponseCodec())
+    }
     override fun start(startFuture: Future<Void>?) {
+
+        registerCodecs()
+
         vertx.eventBus().consumer<StoreAddString>(MailBoxes.STORE_ADD_STRING.mailbox).handler(storeAddStringHandler)
         vertx.eventBus().consumer<StoreAddTriple>(MailBoxes.STORE_ADD_TRIPLE.mailbox).handler(storeAddTripleHandler)
         vertx.eventBus().consumer<StoreGetString>(MailBoxes.STORE_GET_STRING.mailbox).handler(getStringHandler)

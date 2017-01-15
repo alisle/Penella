@@ -1,10 +1,23 @@
 package org.penella.store
 
-import io.vertx.core.Vertx
+import io.vertx.core.*
+import io.vertx.core.eventbus.Message
+import io.vertx.core.json.JsonObject
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
+import org.junit.After
+import org.junit.Assert
 import org.junit.Before
+import org.junit.Test
 import org.junit.runner.RunWith
+import org.penella.MailBoxes
+import org.penella.codecs.StatusMessageCodec
+import org.penella.messages.*
+import org.penella.structures.triples.HashTriple
+import org.penella.structures.triples.Triple
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,13 +34,89 @@ import org.junit.runner.RunWith
  *
  * Created by alisle on 1/15/17.
  */
-
 @RunWith(VertxUnitRunner::class)
 class IStoreVerticalTest {
     val vertx : Vertx = Vertx.vertx()
 
     @Before
     fun setUp(context: TestContext) {
+        val config = JsonObject()
+        config.apply {
+            put(IStoreVertical.STORE_TYPE, "BTreeCompressedStore")
+            put(IStoreVertical.SEED, 665445839L)
+            put(IStoreVertical.MAX_STRING, 1024)
+        }
 
+        val deploymentOptions = DeploymentOptions().setConfig(config)
+        vertx.deployVerticle(IStoreVertical::class.java.name, deploymentOptions, context.asyncAssertSuccess())
+        vertx.eventBus().registerDefaultCodec(StatusMessage::class.java, StatusMessageCodec())
     }
+
+    @After
+    fun tearDown(context: TestContext) {
+        vertx.close(context.asyncAssertSuccess())
+    }
+
+
+    @Test
+    fun testAddString() {
+        vertx.eventBus().send(MailBoxes.STORE_ADD_STRING.mailbox, StoreAddString("Hello"), Handler<AsyncResult<Message<StoreAddStringResponse>>> { reply ->
+            if(reply.failed()) {
+                Assert.assertTrue("Timeout waiting for response!", false)
+            } else {
+                val response = reply.result().body()
+                val hash : Long = response.value
+            }
+        })
+    }
+
+    @Test
+    fun testAddTriple() {
+        vertx.eventBus().send(MailBoxes.STORE_ADD_TRIPLE.mailbox, StoreAddTriple(Triple("Subject", "Property", "Object")), Handler<AsyncResult<Message<StatusMessage>>> { reply ->
+            if(reply.failed()) {
+                Assert.assertTrue("Timeout waiting for response!", false)
+            } else {
+                val response = reply.result().body()
+                Assert.assertEquals(response.status, Status.SUCESSFUL)
+            }
+        })
+    }
+
+
+    @Test
+    fun testGetString() {
+        vertx.eventBus().send(MailBoxes.STORE_GET_STRING.mailbox, StoreGetString(100L), Handler<AsyncResult<Message<StoreGetStringResponse>>> { reply ->
+            if(reply.failed()) {
+                Assert.assertTrue("Timeout waiting for response!", false)
+            } else {
+                val response = reply.result().body()
+                Assert.assertEquals(response.value, null)
+            }
+        })
+    }
+
+    @Test
+    fun testGetHashTriple() {
+        vertx.eventBus().send(MailBoxes.STORE_GET_HASHTRIPLE.mailbox, StoreGetHashTriple(HashTriple(0L, 10L, 100L)), Handler<AsyncResult<Message<StoreGetHashTripleResponse>>> { reply ->
+            if(reply.failed()) {
+                Assert.assertTrue("Timeout waiting for response!", false)
+            } else {
+                val response = reply.result().body()
+                Assert.assertNull(response.value)
+            }
+        })
+    }
+
+    @Test
+    fun testGenerateHash() {
+        vertx.eventBus().send(MailBoxes.STORE_GENERATE_HASH.mailbox, StoreGetHashTriple(HashTriple(0L, 10L, 100L)), Handler<AsyncResult<Message<StoreGenerateHashResponse>>> { reply ->
+            if(reply.failed()) {
+                Assert.assertTrue("Timeout waiting for response!", false)
+            } else {
+                val response = reply.result().body()
+                Assert.assertTrue(response.value is Long)
+            }
+        })
+    }
+
 }
