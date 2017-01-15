@@ -23,6 +23,8 @@ import org.penella.messages.*
  *
  * Created by alisle on 1/14/17.
  */
+
+class InvalidStoreSelected : Exception("Invalid Store Selected")
 class IStoreVertical : AbstractVerticle() {
     companion object {
         private val STORE_TYPE = "type"
@@ -30,36 +32,44 @@ class IStoreVertical : AbstractVerticle() {
         private val MAX_STRING = "max_string"
     }
 
-    val storeType = config().getString(STORE_TYPE)
-    val storeSeed = config().getLong(SEED)
-    val storeMaxString = config().getInteger(MAX_STRING)
+    val storeType : String
+    val storeSeed : Long
+    val storeMaxString : Int
+    val store : IStore
 
-    val store =  when(storeType) {
-        "BSTreeStore" -> BSTreeStore(storeSeed)
-        "BTreeCompressedStore" -> BTreeCompressedStore(storeSeed, storeMaxString)
+    init {
+        storeType = config().getString(STORE_TYPE)
+        storeSeed = config().getLong(SEED)
+        storeMaxString = config().getInteger(MAX_STRING)
+        store =  when(storeType) {
+            "BSTreeStore" -> BSTreeStore(storeSeed)
+            "BTreeCompressedStore" -> BTreeCompressedStore(storeSeed, storeMaxString)
+            else -> throw InvalidStoreSelected()
+        }
+
     }
 
-    override fun start(startFuture: Future<Void>?) {
-        vertx.eventBus().consumer<StoreAddString>(MailBoxes.STORE_ADD_STRING.mailbox).handler(storeAddStringHandler())
-        vertx.eventBus().consumer<StoreAddTriple>(MailBoxes.STORE_ADD_TRIPLE.mailbox).handler(storeAddTripleHandler())
-        vertx.eventBus().consumer<StoreGetString>(MailBoxes.STORE_GET_STRING.mailbox).handler(getStringHandler())
-
-        startFuture.complete()
-    }
-
-    fun storeAddTripleHandler = Handler<Message<StoreAddTriple>> { msg ->
+    val storeAddTripleHandler = Handler<Message<StoreAddTriple>> { msg ->
         store.add(msg.body().value)
         msg.reply(StatusMessage(Status.SUCESSFUL, "Successfully Added"))
     }
 
-    fun storeAddStringHandler = Handler<Message<StoreAddString>> { msg ->
+    val storeAddStringHandler = Handler<Message<StoreAddString>> { msg ->
         val hash = store.add(msg.body().value)
         msg.reply(StoreAddStringResponse(hash))
     }
 
-    fun getStringHandler = Handler<Message<StoreGetString>> { msg ->
+    val getStringHandler = Handler<Message<StoreGetString>> { msg ->
         val string = store.get(msg.body().value)
         msg.reply(StoreGetStringResponse(string))
+    }
+
+    override fun start(startFuture: Future<Void>?) {
+        vertx.eventBus().consumer<StoreAddString>(MailBoxes.STORE_ADD_STRING.mailbox).handler(storeAddStringHandler)
+        vertx.eventBus().consumer<StoreAddTriple>(MailBoxes.STORE_ADD_TRIPLE.mailbox).handler(storeAddTripleHandler)
+        vertx.eventBus().consumer<StoreGetString>(MailBoxes.STORE_GET_STRING.mailbox).handler(getStringHandler)
+
+        startFuture?.complete()
     }
 
     override fun stop(stopFuture: Future<Void>?) {
