@@ -4,6 +4,7 @@ import org.junit.Assert
 import org.junit.Test
 import org.penella.index.bstree.BSTreeIndexFactory
 import org.penella.messages.CreateDB
+import org.penella.messages.ListDB
 import org.penella.messages.Status
 import org.penella.node.Node
 import org.penella.store.BSTreeStore
@@ -49,7 +50,7 @@ class NodeTest {
 
         names.forEach { x -> node.createDB(CreateDB(x, 100)) }
 
-        val dbs = node.listDB().names
+        val dbs = node.listDB(ListDB()).names
 
         names.forEach { x -> Assert.assertTrue(dbs.contains(x)) }
     }

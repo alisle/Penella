@@ -37,14 +37,14 @@ class BTreeCompressedStore(seed: Long, val maxStringSize : Int) : IStore {
     }
 
     override fun add(value: String) : Long {
-        //if(log.isTraceEnabled) log.trace("Adding Value:" + value)
+        if(log.isTraceEnabled) log.trace("Adding Value:" + value)
         val hash = hashFunction.hashChars(value)
         store.add(hash, compressor.compressString(value))
         return hash
     }
 
     override fun add(triple: Triple) {
-        //if(log.isTraceEnabled) log.trace("Adding Triple:" + triple)
+        if(log.isTraceEnabled) log.trace("Adding Triple:" + triple)
 
         store.add(triple.hashTriple.hashSubject, compressor.compressString(triple.subject))
         store.add(triple.hashTriple.hashProperty, compressor.compressString(triple.property))

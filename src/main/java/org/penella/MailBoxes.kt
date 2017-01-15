@@ -16,5 +16,13 @@ package org.penella
  * Created by alisle on 1/13/17.
  */
 enum class MailBoxes(val mailbox : String) {
-    NODE_CREATE_DB("node.create.db")
+    NODE_CREATE_DB("node.create.db"),
+    NODE_LIST_DBS("node.list.dbs"),
+
+    STORE_ADD_STRING("store.add.string"),
+    STORE_ADD_TRIPLE("store.add.triple"),
+    STORE_GET_STRING("store.get.string"),
+    STORE_GET_HASHTRIPLE("store.get.hashtriple"),
+    STORE_GENERATE_HASH("store.generate.hash")
+    ;
 }

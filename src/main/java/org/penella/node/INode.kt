@@ -1,5 +1,10 @@
 package org.penella.node
 
+import org.penella.messages.CreateDB
+import org.penella.messages.ListDB
+import org.penella.messages.ListDBResponse
+import org.penella.messages.StatusMessage
+
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,4 +21,6 @@ package org.penella.node
  * Created by alisle on 9/27/16.
  */
 interface INode {
+    fun createDB(db : CreateDB) : StatusMessage
+    fun listDB(list : ListDB) : ListDBResponse
 }

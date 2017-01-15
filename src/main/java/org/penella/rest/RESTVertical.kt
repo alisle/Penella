@@ -11,9 +11,7 @@ import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.BodyHandler
 import org.penella.MailBoxes
-import org.penella.messages.CreateDB
-import org.penella.messages.Status
-import org.penella.messages.StatusMessage
+import org.penella.messages.*
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -32,9 +30,6 @@ import java.util.concurrent.TimeUnit
  *
  * Created by alisle on 12/12/16.
  */
-
-data class Country(val name: String, val code: String)
-data class Island(val name: String, val country: Country)
 
 class RESTVertical : AbstractVerticle() {
 
@@ -56,7 +51,7 @@ class RESTVertical : AbstractVerticle() {
     private fun createRouter() = Router.router(vertx).apply {
         route().handler(BodyHandler.create())
         post("/_add").consumes("*/json").produces("application/json").blockingHandler(handlerAddDatabase)
-        get("/_list").consumes("*/json").produces("application/json").blockingHandler(handlerListDatabase)
+        get("/_list").produces("application/json").blockingHandler(handlerListDatabase)
     }
 
     private fun statusMessageHandler(latch: CountDownLatch, future: Future<StatusMessage>) = Handler<AsyncResult<Message<StatusMessage>>> { reply ->
@@ -95,7 +90,28 @@ class RESTVertical : AbstractVerticle() {
     }
 
     val handlerListDatabase = Handler<RoutingContext> { req ->
+        val latch : CountDownLatch = CountDownLatch(1)
+        val future : Future<ListDBResponse> = Future.future()
+        val response = req.response()
 
+        vertx.eventBus().send(MailBoxes.NODE_LIST_DBS.mailbox, ListDB(), Handler<AsyncResult<Message<ListDBResponse>>>  { reply ->
+            if (reply.failed()) {
+                future.fail(reply.cause())
+            } else {
+                val list: ListDBResponse= reply.result().body()
+                future.complete(list)
+            }
+
+            latch.countDown()
+        })
+
+        if(latch.await(400, TimeUnit.SECONDS)) {
+            val result = future.result()!!
+            response.endWithJson(result)
+        } else {
+            response.statusCode = 503
+            response.endWithJson("Timeout waiting for command to finish")
+        }
     }
 
     fun HttpServerResponse.endWithJson(obj: Any) {

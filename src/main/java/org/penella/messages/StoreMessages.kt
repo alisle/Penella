@@ -1,5 +1,8 @@
 package org.penella.messages
 
+import org.penella.structures.triples.HashTriple
+import org.penella.structures.triples.Triple
+
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +16,18 @@ package org.penella.messages
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by alisle on 12/12/16.
+ * Created by alisle on 1/14/17.
  */
+data class StoreAddString(val value : String)
+data class StoreAddStringResponse(val value: Long)
 
-data class CreateDB(val name : String, val shards : Int)
-data class ListDBResponse(val names : Array<String>)
-class ListDB {
-    override fun equals(other: Any?): Boolean {
-        return other is ListDB
-    }
-}
+data class StoreAddTriple(val value: Triple)
 
+data class StoreGetString(val value: Long)
+data class StoreGetStringResponse(val value: String?)
+
+data class StoreGetHashTriple(val value: HashTriple)
+data class StoreGetHashTripleResponse(val value: Triple?)
+
+data class StoreGenerateHash(val value: String)
+data class StoreGenerateHashResponse(val value: Long?)

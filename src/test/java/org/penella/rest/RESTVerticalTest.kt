@@ -13,10 +13,10 @@ import org.junit.Before
 import org.junit.Test
 import org.penella.MailBoxes
 import org.penella.codecs.CreateDBCodec
+import org.penella.codecs.ListDBCodec
+import org.penella.codecs.ListDBResponseCodec
 import org.penella.codecs.StatusMessageCodec
-import org.penella.messages.CreateDB
-import org.penella.messages.Status
-import org.penella.messages.StatusMessage
+import org.penella.messages.*
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,6 +43,9 @@ class RESTVerticalTest {
         Json.mapper.registerModule(KotlinModule())
         vertx.eventBus().registerDefaultCodec(CreateDB::class.java, CreateDBCodec())
         vertx.eventBus().registerDefaultCodec(StatusMessage::class.java, StatusMessageCodec())
+        vertx.eventBus().registerDefaultCodec(ListDB::class.java, ListDBCodec())
+        vertx.eventBus().registerDefaultCodec(ListDBResponse::class.java, ListDBResponseCodec())
+
         vertx.deployVerticle(RESTVertical::class.java.name, context.asyncAssertSuccess())
     }
 
@@ -104,6 +107,38 @@ class RESTVerticalTest {
         request.putHeader("content-type", "application/json")
                 .putHeader("content-length", query.length.toString())
                 .write(query).end()
+
+        async.await(2 * 10000)
+
+    }
+
+    @Test
+    fun testListDB(context: TestContext) {
+        val listDB = ListDB()
+        val async = context.async()
+
+        vertx.eventBus().consumer<CreateDB>(MailBoxes.NODE_LIST_DBS.mailbox).handler { msg ->
+            msg.reply(ListDBResponse(arrayOf("Test 1", "Test 2", "Test 3")))
+        }
+
+
+        val request = vertx.createHttpClient().getNow(8080,"localhost","/_list", Handler { response ->
+            if(response.statusCode() != 200) {
+                context.fail()
+            } else {
+                response.handler { body ->
+                    val json = body.toJsonObject()
+                    Assert.assertTrue(json.containsKey("names"))
+
+                    val jsonArray = json.getJsonArray("names")
+                    Assert.assertTrue(jsonArray.contains("Test 1"))
+                    Assert.assertTrue(jsonArray.contains("Test 2"))
+                    Assert.assertTrue(jsonArray.contains("Test 3"))
+                }
+            }
+
+            async.complete()
+        })
 
         async.await(2 * 10000)
 
