@@ -64,10 +64,22 @@ class IStoreVertical : AbstractVerticle() {
         msg.reply(StoreGetStringResponse(string))
     }
 
+    val getHashtripleHandler = Handler<Message<StoreGetHashTriple>> { msg ->
+        val triple = store.get(msg.body().value)
+        msg.reply(StoreGetHashTripleResponse(triple))
+    }
+
+    val generateHashHandler = Handler<Message<StoreGenerateHash>> { msg ->
+        val hash = store.generateHash(msg.body().value)
+        msg.reply(StoreGenerateHashResponse(hash))
+    }
+
     override fun start(startFuture: Future<Void>?) {
         vertx.eventBus().consumer<StoreAddString>(MailBoxes.STORE_ADD_STRING.mailbox).handler(storeAddStringHandler)
         vertx.eventBus().consumer<StoreAddTriple>(MailBoxes.STORE_ADD_TRIPLE.mailbox).handler(storeAddTripleHandler)
         vertx.eventBus().consumer<StoreGetString>(MailBoxes.STORE_GET_STRING.mailbox).handler(getStringHandler)
+        vertx.eventBus().consumer<StoreGetHashTriple>(MailBoxes.STORE_GET_HASHTRIPLE.mailbox).handler(getHashtripleHandler)
+        vertx.eventBus().consumer<StoreGenerateHash>(MailBoxes.STORE_GENERATE_HASH.mailbox).handler(generateHashHandler)
 
         startFuture?.complete()
     }
