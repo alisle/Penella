@@ -1,0 +1,10 @@
+{
+  "store": {
+    "type" : "BTreeCompressedStore",
+    "seed" : 665445839,
+    "max_string" : 1024
+  },
+  "node": {
+    "index_factory" : "BSTreeTreeIndexFactory"
+  }
+}

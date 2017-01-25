@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit
 
 class RESTVertical : AbstractVerticle() {
 
+    val storeEndpoints by lazy { StoreRouter(vertx) }
 
     override fun start(startFuture: Future<Void>?) {
         val router = createRouter()
@@ -52,6 +53,7 @@ class RESTVertical : AbstractVerticle() {
         route().handler(BodyHandler.create())
         post("/_add").consumes("*/json").produces("application/json").blockingHandler(handlerAddDatabase)
         get("/_list").produces("application/json").blockingHandler(handlerListDatabase)
+        mountSubRouter("/_store", storeEndpoints.router)
     }
 
     private fun statusMessageHandler(latch: CountDownLatch, future: Future<StatusMessage>) = Handler<AsyncResult<Message<StatusMessage>>> { reply ->
@@ -106,8 +108,13 @@ class RESTVertical : AbstractVerticle() {
         })
 
         if(latch.await(400, TimeUnit.SECONDS)) {
-            val result = future.result()!!
-            response.endWithJson(result)
+            val result = future.result()
+            if(result != null) {
+                response.endWithJson(result)
+            } else {
+                response.endWithJson(arrayOfNulls<String>(0))
+            }
+
         } else {
             response.statusCode = 503
             response.endWithJson("Timeout waiting for command to finish")

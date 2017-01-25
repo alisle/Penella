@@ -18,16 +18,16 @@ import org.penella.structures.triples.Triple
  *
  * Created by alisle on 1/14/17.
  */
-data class StoreAddString(val value : String)
-data class StoreAddStringResponse(val value: Long)
+data class StoreAddString(val string: String)
+data class StoreAddStringResponse(val hash: Long)
 
 data class StoreAddTriple(val value: Triple)
 
 data class StoreGetString(val value: Long)
-data class StoreGetStringResponse(val value: String?)
+data class StoreGetStringResponse(val string: String?)
 
 data class StoreGetHashTriple(val value: HashTriple)
 data class StoreGetHashTripleResponse(val value: Triple?)
 
 data class StoreGenerateHash(val value: String)
-data class StoreGenerateHashResponse(val value: Long?)
+data class StoreGenerateHashResponse(val hash: Long?)

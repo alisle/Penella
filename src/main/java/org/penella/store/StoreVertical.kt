@@ -26,7 +26,7 @@ import org.penella.messages.*
  */
 
 class InvalidStoreSelected : Exception("Invalid Store Selected")
-class IStoreVertical : AbstractVerticle() {
+class StoreVertical : AbstractVerticle() {
     companion object {
         val STORE_TYPE = "type"
         val SEED = "seed"
@@ -56,7 +56,7 @@ class IStoreVertical : AbstractVerticle() {
     }
 
     val storeAddStringHandler = Handler<Message<StoreAddString>> { msg ->
-        val hash = store.add(msg.body().value)
+        val hash = store.add(msg.body().string)
         msg.reply(StoreAddStringResponse(hash))
     }
 

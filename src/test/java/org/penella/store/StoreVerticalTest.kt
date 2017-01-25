@@ -35,20 +35,20 @@ import java.util.concurrent.TimeUnit
  * Created by alisle on 1/15/17.
  */
 @RunWith(VertxUnitRunner::class)
-class IStoreVerticalTest {
+class StoreVerticalTest {
     val vertx : Vertx = Vertx.vertx()
 
     @Before
     fun setUp(context: TestContext) {
         val config = JsonObject()
         config.apply {
-            put(IStoreVertical.STORE_TYPE, "BTreeCompressedStore")
-            put(IStoreVertical.SEED, 665445839L)
-            put(IStoreVertical.MAX_STRING, 1024)
+            put(StoreVertical.STORE_TYPE, "BTreeCompressedStore")
+            put(StoreVertical.SEED, 665445839L)
+            put(StoreVertical.MAX_STRING, 1024)
         }
 
         val deploymentOptions = DeploymentOptions().setConfig(config)
-        vertx.deployVerticle(IStoreVertical::class.java.name, deploymentOptions, context.asyncAssertSuccess())
+        vertx.deployVerticle(StoreVertical::class.java.name, deploymentOptions, context.asyncAssertSuccess())
         vertx.eventBus().registerDefaultCodec(StatusMessage::class.java, StatusMessageCodec())
     }
 
@@ -65,7 +65,7 @@ class IStoreVerticalTest {
                 Assert.assertTrue("Timeout waiting for response!", false)
             } else {
                 val response = reply.result().body()
-                val hash : Long = response.value
+                val hash : Long = response.hash
             }
         })
     }
@@ -90,7 +90,7 @@ class IStoreVerticalTest {
                 Assert.assertTrue("Timeout waiting for response!", false)
             } else {
                 val response = reply.result().body()
-                Assert.assertEquals(response.value, null)
+                Assert.assertEquals(response.string, null)
             }
         })
     }
@@ -114,7 +114,7 @@ class IStoreVerticalTest {
                 Assert.assertTrue("Timeout waiting for response!", false)
             } else {
                 val response = reply.result().body()
-                Assert.assertTrue(response.value is Long)
+                Assert.assertTrue(response.hash is Long)
             }
         })
     }

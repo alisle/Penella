@@ -1,8 +1,21 @@
 package org.penella
 
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.vertx.core.*
+import io.vertx.core.json.Json
+import io.vertx.core.json.JsonObject
 import io.vertx.core.logging.LoggerFactory
+import org.penella.codecs.CreateDBCodec
+import org.penella.codecs.ListDBCodec
+import org.penella.codecs.ListDBResponseCodec
+import org.penella.codecs.StatusMessageCodec
+import org.penella.messages.CreateDB
+import org.penella.messages.ListDB
+import org.penella.messages.ListDBResponse
+import org.penella.messages.StatusMessage
+import org.penella.node.NodeVertical
 import org.penella.rest.RESTVertical
+import org.penella.store.StoreVertical
 
 
 /**
@@ -23,6 +36,13 @@ import org.penella.rest.RESTVertical
 class EntryPoint {
     private val vertx : Vertx
 
+    private val config : JsonObject by lazy {
+        val url = javaClass.classLoader.getResource("config/default.json")
+        val json = url.readText(Charsets.UTF_8)
+
+        JsonObject(json)
+    }
+
     init {
          vertx = Vertx.vertx(getVertxOptions())
     }
@@ -34,20 +54,35 @@ class EntryPoint {
         return options
     }
 
+
     fun start() {
+        registerCodecs()
+        vertx.deployVerticle(StoreVertical::class.java.name, DeploymentOptions().setConfig(config.getJsonObject("store")))
+        vertx.deployVerticle(NodeVertical::class.java.name, DeploymentOptions().setConfig(config.getJsonObject("node")))
+        startRest()
+    }
+
+    fun startRest() {
         val deploymentOptions = DeploymentOptions()
         val restHandler = Handler<AsyncResult<String>> {
             fun handle(result : AsyncResult<String>) {
                 if(result.succeeded()) {
                     log.info("Succeeded in creating REST Vertical")
                 } else {
-                    log.info("Failed in creating the REST vVertical - " + result.cause().message)
+                    log.error("Failed in creating the REST vVertical - " + result.cause().message)
                 }
             }
         }
+
         vertx.deployVerticle("org.penella.rest.RESTVertical", deploymentOptions.setInstances(1), restHandler)
 
     }
+
+    fun registerCodecs() {
+        Json.mapper.registerModule(KotlinModule())
+        vertx.eventBus().registerDefaultCodec(StatusMessage::class.java, StatusMessageCodec())
+    }
+
     companion object {
         private val log = org.slf4j.LoggerFactory.getLogger(EntryPoint::class.java)
 
