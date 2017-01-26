@@ -2,10 +2,8 @@ package org.penella.shards
 
 import org.penella.index.IIndexFactory
 import org.penella.index.IndexType
-import org.penella.index.IndexVertical
 import org.penella.index.bstree.InvalidIndexRequest
-import org.penella.query.IQuery
-import org.penella.query.IncompleteResultSet
+import org.penella.messages.IndexResultSet
 import org.penella.structures.triples.HashTriple
 import org.penella.structures.triples.TripleType
 import org.slf4j.Logger
@@ -39,7 +37,7 @@ class Shard constructor(private val indexFactory: IIndexFactory) : IShard {
 
     override fun size() = counter.get()
 
-    override fun get(indexType: IndexType, triple: HashTriple): IncompleteResultSet {
+    override fun get(indexType: IndexType, triple: HashTriple): IndexResultSet {
         if(log.isDebugEnabled) log.debug("Grabbing triple: $triple")
 
         return when(indexType) {

@@ -1,6 +1,6 @@
-package org.penella.query
+package org.penella.codecs
 
-import org.penella.structures.triples.HashTriple
+import org.penella.messages.IndexResultSet
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,10 @@ import org.penella.structures.triples.HashTriple
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by alisle on 11/18/16.
+ * Created by alisle on 1/25/17.
  */
-
-
-class IncompleteResultSet(val triples: Array<HashTriple>) : IResultSet {}
+class IndexResultSetCodec : JSONCodec<IndexResultSet>(IndexResultSet::class.java) {
+    override fun name(): String {
+        return "IndexResultSet"
+    }
+}

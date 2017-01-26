@@ -1,5 +1,6 @@
 package org.penella.messages
 
+import org.penella.query.IResultSet
 import org.penella.structures.triples.HashTriple
 import org.penella.structures.triples.TripleType
 import org.penella.structures.triples.Triple
@@ -20,6 +21,7 @@ import org.penella.structures.triples.Triple
  * Created by alisle on 12/4/16.
  */
 
-data class GetSingleResult(val firstType: TripleType, val firstValue: Long)
-data class GetDoubleResult(val firstType: TripleType, val secondType: TripleType, val firstValue: Long, val secondValue: Long)
-data class GetTripleResult(val first: Long, val second: Long, val third: Long)
+data class IndexAdd(val triple: HashTriple)
+data class IndexGetFirstLayer(val type: TripleType, val first: Long)
+data class IndexGetSecondLayer(val firstType: TripleType, val firstValue: Long, val secondType: TripleType, val secondValue: Long)
+data class IndexResultSet(val triples: Array<HashTriple>) : IResultSet

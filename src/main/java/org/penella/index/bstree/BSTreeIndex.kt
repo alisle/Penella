@@ -2,7 +2,8 @@ package org.penella.index.bstree
 
 import org.penella.index.IIndex
 import org.penella.index.IndexType
-import org.penella.query.IncompleteResultSet
+import org.penella.messages.IndexResultSet
+import org.slf4j.LoggerFactory
 
 
 /**
@@ -22,6 +23,9 @@ import org.penella.query.IncompleteResultSet
  */
 
 abstract class BSTreeIndex(val index: IndexType) : IIndex {
+    companion object {
+        val log = LoggerFactory.getLogger(BSTreeIndex::class.java)
+    }
     protected val rootTree = FirstLayer(index)
 
 
@@ -29,12 +33,14 @@ abstract class BSTreeIndex(val index: IndexType) : IIndex {
         rootTree.add(first, second, third)
     }
 
-    protected fun getResults(value: Long) : IncompleteResultSet {
-        return IncompleteResultSet(rootTree.get(value))
+    protected fun getResults(value: Long) : IndexResultSet {
+        if(log.isTraceEnabled) { log.trace("Getting Values for $value") }
+        return IndexResultSet(rootTree.get(value))
     }
 
-    protected fun getResults(first: Long, second: Long) : IncompleteResultSet {
-        return IncompleteResultSet(rootTree.get(first, second))
+    protected fun getResults(first: Long, second: Long) : IndexResultSet {
+        if(log.isTraceEnabled) { log.trace("Getting Values for $first-$second") }
+        return IndexResultSet(rootTree.get(first, second))
     }
 
 }

@@ -1,7 +1,7 @@
 package org.penella.index.bstree
 
 import org.penella.index.IndexType
-import org.penella.query.IncompleteResultSet
+import org.penella.messages.IndexResultSet
 import org.penella.structures.triples.HashTriple
 import org.penella.structures.triples.TripleType
 
@@ -22,7 +22,7 @@ import org.penella.structures.triples.TripleType
  */
 class PropertyObjectBSTreeIndex() : BSTreeIndex(IndexType.PO) {
     override fun add(triple: HashTriple) = addTriple(triple.hashProperty, triple.hashObj, triple.hashSubject)
-    override fun get(first: TripleType, second: TripleType, firstValue: Long, secondValue: Long) : IncompleteResultSet = if(first == TripleType.PROPERTY && second == TripleType.OBJECT) getResults(firstValue, secondValue) else  throw IncorrectIndexRequest()
-    override fun get(first: TripleType, value: Long ) : IncompleteResultSet = if(first == TripleType.PROPERTY) getResults(value) else throw IncorrectIndexRequest()
+    override fun get(first: TripleType, second: TripleType, firstValue: Long, secondValue: Long) : IndexResultSet = if(first == TripleType.PROPERTY && second == TripleType.OBJECT) getResults(firstValue, secondValue) else  throw IncorrectIndexRequest()
+    override fun get(first: TripleType, value: Long ) : IndexResultSet = if(first == TripleType.PROPERTY) getResults(value) else throw IncorrectIndexRequest()
 
 }

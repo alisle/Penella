@@ -76,4 +76,9 @@ enum class IndexType(val ID: Int, val mask: Int) {
         }
     }
 
+    override fun toString(): String {
+        return "IndexType-$ID"
+    }
+
+
 }
