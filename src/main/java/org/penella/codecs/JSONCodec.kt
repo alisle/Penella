@@ -1,6 +1,9 @@
 package org.penella.codecs
 
 import io.vertx.core.buffer.Buffer
+import io.vertx.core.eventbus.MessageCodec
+import io.vertx.core.json.Json
+import org.slf4j.LoggerFactory
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +20,7 @@ import io.vertx.core.buffer.Buffer
  *
  * Created by alisle on 1/14/17.
  */
-abstract class JSONCodec {
+abstract class JSONCodec<T>(val clazz : Class<*> ) : MessageCodec<T, T> {
     protected fun extractJSON(pos: Int, buffer: Buffer) : String {
         val size = buffer!!.getInt(pos)
         val bytesStart = pos + 4
@@ -33,4 +36,25 @@ abstract class JSONCodec {
         buffer.appendBytes(bytes)
 
     }
+
+    override fun transform(s: T?): T {
+        return s!!
+    }
+
+    override fun systemCodecID(): Byte {
+        return -1
+    }
+
+
+    override fun decodeFromWire(pos: Int, buffer: Buffer?): T {
+        val json = extractJSON(pos, buffer!!)
+
+        return Json.decodeValue(json, clazz) as T
+    }
+
+    override fun encodeToWire(buffer: Buffer?, s: T) {
+        insertJSON(buffer!!, Json.encode(s))
+    }
+
+    abstract override fun name(): String
 }

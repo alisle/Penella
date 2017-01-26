@@ -20,25 +20,8 @@ import org.penella.messages.StoreGenerateHashResponse
  *
  * Created by alisle on 1/15/17.
  */
-class StoreGenerateHashResponseCodec : MessageCodec<StoreGenerateHashResponse, StoreGenerateHashResponse>, JSONCodec() {
-    override fun systemCodecID(): Byte {
-        return -1
-    }
-
+class StoreGenerateHashResponseCodec : JSONCodec<StoreGenerateHashResponse>(StoreGenerateHashResponse::class.java) {
     override fun name(): String {
         return "StoreGenerateHashResponse"
-    }
-
-    override fun decodeFromWire(pos: Int, buffer: Buffer?): StoreGenerateHashResponse {
-        val json = extractJSON(pos, buffer!!)
-        return Json.decodeValue(json, StoreGenerateHashResponse::class.java)
-    }
-
-    override fun encodeToWire(buffer: Buffer?, s: StoreGenerateHashResponse?) {
-        insertJSON(buffer!!, Json.encode(s))
-    }
-
-    override fun transform(s: StoreGenerateHashResponse?): StoreGenerateHashResponse {
-        return s!!
     }
 }

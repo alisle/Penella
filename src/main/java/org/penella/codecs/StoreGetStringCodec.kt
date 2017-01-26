@@ -20,25 +20,8 @@ import org.penella.messages.StoreGetString
  *
  * Created by alisle on 1/15/17.
  */
-class StoreGetStringCodec : MessageCodec<StoreGetString, StoreGetString>, JSONCodec() {
-    override fun systemCodecID(): Byte {
-        return -1
-    }
-
-    override fun transform(s: StoreGetString?): StoreGetString {
-        return s!!
-    }
-
+class StoreGetStringCodec : JSONCodec<StoreGetString>(StoreGetString::class.java) {
     override fun name(): String {
         return "StoreGetString"
-    }
-
-    override fun decodeFromWire(pos: Int, buffer: Buffer?): StoreGetString {
-        val json = extractJSON(pos, buffer!!)
-        return Json.decodeValue(json, StoreGetString::class.java)
-    }
-
-    override fun encodeToWire(buffer: Buffer?, s: StoreGetString?) {
-        insertJSON(buffer!!, Json.encode(s))
     }
 }

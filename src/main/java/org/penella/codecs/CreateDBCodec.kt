@@ -1,8 +1,5 @@
 package org.penella.codecs
 
-import io.vertx.core.buffer.Buffer
-import io.vertx.core.eventbus.MessageCodec
-import io.vertx.core.json.Json
 import org.penella.messages.CreateDB
 
 /**
@@ -20,25 +17,8 @@ import org.penella.messages.CreateDB
  *
  * Created by alisle on 1/13/17.
  */
-class CreateDBCodec : MessageCodec<CreateDB, CreateDB>, JSONCodec() {
-    override fun systemCodecID(): Byte {
-        return -1
-    }
-
+class CreateDBCodec : JSONCodec<CreateDB>(CreateDB::class.java) {
     override fun name(): String {
         return "CreateDB"
-    }
-
-    override fun encodeToWire(buffer: Buffer?, s: CreateDB?) {
-        insertJSON(buffer!!, Json.encode(s))
-    }
-
-    override fun decodeFromWire(pos: Int, buffer: Buffer?): CreateDB {
-        val json = extractJSON(pos, buffer!!)
-        return Json.decodeValue(json, CreateDB::class.java)
-    }
-
-    override fun transform(s: CreateDB?): CreateDB {
-        return s!!
     }
 }

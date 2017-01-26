@@ -1,8 +1,5 @@
 package org.penella.codecs
 
-import io.vertx.core.buffer.Buffer
-import io.vertx.core.eventbus.MessageCodec
-import io.vertx.core.json.Json
 import org.penella.messages.ListDB
 
 /**
@@ -20,26 +17,8 @@ import org.penella.messages.ListDB
  *
  * Created by alisle on 1/14/17.
  */
-class ListDBCodec : MessageCodec<ListDB, ListDB>, JSONCodec() {
-    override fun systemCodecID(): Byte {
-        return -1
-    }
-
-    override fun transform(s: ListDB?): ListDB {
-        return s!!
-    }
-
+class ListDBCodec : JSONCodec<ListDB>(ListDB::class.java) {
     override fun name(): String {
         return "ListDB"
     }
-
-    override fun encodeToWire(buffer: Buffer?, s: ListDB?) {
-        insertJSON(buffer!!, Json.encode(s))
-    }
-
-    override fun decodeFromWire(pos: Int, buffer: Buffer?): ListDB {
-        val json = extractJSON(pos, buffer!!)
-        return Json.decodeValue(json, ListDB::class.java)
-    }
-
 }

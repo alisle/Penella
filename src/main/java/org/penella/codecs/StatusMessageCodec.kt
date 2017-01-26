@@ -1,8 +1,5 @@
 package org.penella.codecs
 
-import io.vertx.core.buffer.Buffer
-import io.vertx.core.eventbus.MessageCodec
-import io.vertx.core.json.Json
 import org.penella.messages.StatusMessage
 
 /**
@@ -20,25 +17,8 @@ import org.penella.messages.StatusMessage
  *
  * Created by alisle on 1/14/17.
  */
-class StatusMessageCodec : MessageCodec<StatusMessage, StatusMessage>, JSONCodec() {
+class StatusMessageCodec : JSONCodec<StatusMessage>(StatusMessage::class.java) {
     override fun name(): String {
         return "StatusMessage"
-    }
-
-    override fun decodeFromWire(pos: Int, buffer: Buffer?): StatusMessage {
-        val json = extractJSON(pos, buffer!!)
-        return Json.decodeValue(json, StatusMessage::class.java)
-    }
-
-    override fun encodeToWire(buffer: Buffer?, s: StatusMessage?) {
-        insertJSON(buffer!!, Json.encode(s))
-    }
-
-    override fun transform(s: StatusMessage?): StatusMessage {
-        return s!!
-    }
-
-    override fun systemCodecID(): Byte {
-        return -1
     }
 }

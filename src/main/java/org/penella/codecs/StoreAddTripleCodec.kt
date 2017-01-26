@@ -20,25 +20,8 @@ import org.penella.messages.StoreAddTriple
  *
  * Created by alisle on 1/15/17.
  */
-class StoreAddTripleCodec : MessageCodec<StoreAddTriple, StoreAddTriple>, JSONCodec() {
-    override fun transform(s: StoreAddTriple?): StoreAddTriple {
-        return s!!
-    }
-
-    override fun encodeToWire(buffer: Buffer?, s: StoreAddTriple?) {
-        insertJSON(buffer!!, Json.encode(s))
-    }
-
+class StoreAddTripleCodec : JSONCodec<StoreAddTriple>(StoreAddTriple::class.java) {
     override fun name(): String {
         return "StoreAddTriple"
-    }
-
-    override fun decodeFromWire(pos: Int, buffer: Buffer?): StoreAddTriple {
-        val json = extractJSON(pos, buffer!!)
-        return Json.decodeValue(json, StoreAddTriple::class.java)
-    }
-
-    override fun systemCodecID(): Byte {
-        return -1
     }
 }

@@ -20,26 +20,8 @@ import org.penella.messages.ListDBResponse
  *
  * Created by alisle on 1/14/17.
  */
-class ListDBResponseCodec : MessageCodec<ListDBResponse, ListDBResponse>, JSONCodec() {
-    override fun encodeToWire(buffer: Buffer?, s: ListDBResponse?) {
-        insertJSON(buffer!!, Json.encode(s))
-    }
-
-    override fun transform(s: ListDBResponse?): ListDBResponse {
-        return s!!
-    }
-
+class ListDBResponseCodec : JSONCodec<ListDBResponse>(ListDBResponse::class.java) {
     override fun name(): String {
         return "ListDBResponse"
-    }
-
-    override fun decodeFromWire(pos: Int, buffer: Buffer?): ListDBResponse {
-        val json = extractJSON(pos, buffer!!)
-        return Json.decodeValue(json, ListDBResponse::class.java)
-
-    }
-
-    override fun systemCodecID(): Byte {
-        return -1
     }
 }

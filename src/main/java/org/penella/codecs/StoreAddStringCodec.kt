@@ -1,8 +1,5 @@
 package org.penella.codecs
 
-import io.vertx.core.buffer.Buffer
-import io.vertx.core.eventbus.MessageCodec
-import io.vertx.core.json.Json
 import org.penella.messages.StoreAddString
 
 /**
@@ -20,25 +17,9 @@ import org.penella.messages.StoreAddString
  *
  * Created by alisle on 1/15/17.
  */
-class StoreAddStringCodec : MessageCodec<StoreAddString, StoreAddString>, JSONCodec() {
-    override fun systemCodecID(): Byte {
-        return -1;
-    }
-
-    override fun decodeFromWire(pos: Int, buffer: Buffer?): StoreAddString {
-        val json = extractJSON(pos, buffer!!)
-        return Json.decodeValue(json, StoreAddString::class.java)
-    }
-
-    override fun encodeToWire(buffer: Buffer?, s: StoreAddString?) {
-        insertJSON(buffer!!, Json.encode(s))
-    }
-
+class StoreAddStringCodec : JSONCodec<StoreAddString>(StoreAddString::class.java) {
     override fun name(): String {
         return "StoreAddString"
     }
 
-    override fun transform(s: StoreAddString?): StoreAddString {
-        return s!!
-    }
 }

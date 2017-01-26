@@ -20,25 +20,8 @@ import org.penella.messages.StoreGetHashTriple
  *
  * Created by alisle on 1/15/17.
  */
-class StoreGetHashTripleCodec : MessageCodec<StoreGetHashTriple, StoreGetHashTriple>, JSONCodec() {
-    override fun systemCodecID(): Byte {
-        return -1
-    }
-
-    override fun decodeFromWire(pos: Int, buffer: Buffer?): StoreGetHashTriple {
-        val json = extractJSON(pos, buffer!!)
-        return Json.decodeValue(json, StoreGetHashTriple::class.java)
-    }
-
-    override fun encodeToWire(buffer: Buffer?, s: StoreGetHashTriple?) {
-        insertJSON(buffer!!, Json.encode(s))
-    }
-
+class StoreGetHashTripleCodec : JSONCodec<StoreGetHashTriple>(StoreGetHashTriple::class.java) {
     override fun name(): String {
         return "StoreGetHashTriple"
-    }
-
-    override fun transform(s: StoreGetHashTriple?): StoreGetHashTriple {
-        return s!!
     }
 }

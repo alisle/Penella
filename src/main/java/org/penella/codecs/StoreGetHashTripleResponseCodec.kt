@@ -20,25 +20,8 @@ import org.penella.messages.StoreGetHashTripleResponse
  *
  * Created by alisle on 1/15/17.
  */
-class StoreGetHashTripleResponseCodec : MessageCodec<StoreGetHashTripleResponse, StoreGetHashTripleResponse>, JSONCodec() {
-    override fun systemCodecID(): Byte {
-        return -1
-    }
-
+class StoreGetHashTripleResponseCodec : JSONCodec<StoreGetHashTripleResponse>(StoreGetHashTripleResponse::class.java) {
     override fun name(): String {
         return "StoreGetHashTripleResponse"
-    }
-
-    override fun decodeFromWire(pos: Int, buffer: Buffer?): StoreGetHashTripleResponse {
-        val json = extractJSON(pos, buffer!!)
-        return Json.decodeValue(json, StoreGetHashTripleResponse::class.java)
-    }
-
-    override fun transform(s: StoreGetHashTripleResponse?): StoreGetHashTripleResponse {
-        return s!!
-    }
-
-    override fun encodeToWire(buffer: Buffer?, s: StoreGetHashTripleResponse?) {
-        insertJSON(buffer!!, Json.encode(s))
     }
 }

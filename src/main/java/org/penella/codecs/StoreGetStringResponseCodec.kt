@@ -20,25 +20,8 @@ import org.penella.messages.StoreGetStringResponse
  *
  * Created by alisle on 1/15/17.
  */
-class StoreGetStringResponseCodec : MessageCodec<StoreGetStringResponse, StoreGetStringResponse>, JSONCodec() {
+class StoreGetStringResponseCodec : JSONCodec<StoreGetStringResponse>(StoreGetStringResponse::class.java) {
     override fun name(): String {
         return "StoreGetStringResponse"
-    }
-
-    override fun decodeFromWire(pos: Int, buffer: Buffer?): StoreGetStringResponse {
-        val json = extractJSON(pos, buffer!!)
-        return Json.decodeValue(json, StoreGetStringResponse::class.java)
-    }
-
-    override fun systemCodecID(): Byte {
-        return -1
-    }
-
-    override fun encodeToWire(buffer: Buffer?, s: StoreGetStringResponse?) {
-        insertJSON(buffer!!, Json.encode(s))
-    }
-
-    override fun transform(s: StoreGetStringResponse?): StoreGetStringResponse {
-        return s!!
     }
 }

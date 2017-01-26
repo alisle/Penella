@@ -20,25 +20,8 @@ import org.penella.messages.StoreGenerateHash
  *
  * Created by alisle on 1/15/17.
  */
-class StoreGenerateHashCodec : MessageCodec<StoreGenerateHash, StoreGenerateHash>, JSONCodec() {
+class StoreGenerateHashCodec : JSONCodec<StoreGenerateHash>(StoreGenerateHash::class.java) {
     override fun name(): String {
         return "StoreGenerateHash"
-    }
-
-    override fun encodeToWire(buffer: Buffer?, s: StoreGenerateHash?) {
-        insertJSON(buffer!!, Json.encode(s))
-    }
-
-    override fun decodeFromWire(pos: Int, buffer: Buffer?): StoreGenerateHash {
-        val json = extractJSON(pos, buffer!!)
-        return Json.decodeValue(json, StoreGenerateHash::class.java)
-    }
-
-    override fun systemCodecID(): Byte {
-        return -1
-    }
-
-    override fun transform(s: StoreGenerateHash?): StoreGenerateHash {
-        return s!!
     }
 }

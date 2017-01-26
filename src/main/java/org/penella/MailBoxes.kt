@@ -23,6 +23,11 @@ enum class MailBoxes(val mailbox : String) {
     STORE_ADD_TRIPLE("store.add.triple"),
     STORE_GET_STRING("store.get.string"),
     STORE_GET_HASHTRIPLE("store.get.hashtriple"),
-    STORE_GENERATE_HASH("store.generate.hash")
+    STORE_GENERATE_HASH("store.generate.hash"),
+
+    INDEX_ADD_TRIPLE("index.add.triple."),
+    INDEX_GET_FIRST("index.get.first."),
+    INDEX_GET_SECOND("index.get.second."),
+
     ;
 }

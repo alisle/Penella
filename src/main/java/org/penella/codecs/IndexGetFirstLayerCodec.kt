@@ -1,9 +1,6 @@
 package org.penella.codecs
 
-import io.vertx.core.buffer.Buffer
-import io.vertx.core.eventbus.MessageCodec
-import io.vertx.core.json.Json
-import org.penella.messages.StoreAddStringResponse
+import org.penella.messages.IndexGetFirstLayer
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +15,10 @@ import org.penella.messages.StoreAddStringResponse
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by alisle on 1/15/17.
+ * Created by alisle on 1/25/17.
  */
-class StoreAddStringResponseCodec : JSONCodec<StoreAddStringResponse>(StoreAddStringResponse::class.java) {
+class IndexGetFirstLayerCodec : JSONCodec<IndexGetFirstLayer>(IndexGetFirstLayer::class.java) {
     override fun name(): String {
-        return "StoreAddStringResponse"
+        return "IndexGetFirstLayer"
     }
 }
