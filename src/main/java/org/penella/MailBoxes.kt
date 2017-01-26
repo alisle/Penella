@@ -29,5 +29,9 @@ enum class MailBoxes(val mailbox : String) {
     INDEX_GET_FIRST("index.get.first."),
     INDEX_GET_SECOND("index.get.second."),
 
+    SHARD_GET("shard.get."),
+    SHARD_ADD("shard.add."),
+    SHARD_SIZE("shard.size."),
+
     ;
 }
