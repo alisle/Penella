@@ -1,5 +1,7 @@
 package org.penella.messages
 
+import org.penella.query.Query
+import org.penella.structures.triples.HashTriple
 import org.penella.structures.triples.Triple
 
 /**
@@ -18,6 +20,8 @@ import org.penella.structures.triples.Triple
  *
  * Created by alisle on 12/22/16.
  */
-data class AddTriple(val triple: Triple)
-data class BulkAddTriples(val triples: Array<Triple>)
-data class RawQuery(val outputs : Array<String>, val variables : Array<String>, val triples : Array<Triple>)
+data class DatabaseAddTriple(val triple: Triple)
+data class DatabaseBulkAddTriples(val triples: Array<Triple>)
+data class DatabaseQuery(val query: Query)
+data class DatabaseQueryResult(val results : Set<HashTriple>)
+

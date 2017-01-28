@@ -18,7 +18,5 @@ import org.penella.messages.IndexGetFirstLayer
  * Created by alisle on 1/25/17.
  */
 class IndexGetFirstLayerCodec : JSONCodec<IndexGetFirstLayer>(IndexGetFirstLayer::class.java) {
-    override fun name(): String {
-        return "IndexGetFirstLayer"
-    }
+    override fun name() = "IndexGetFirstLayer"
 }

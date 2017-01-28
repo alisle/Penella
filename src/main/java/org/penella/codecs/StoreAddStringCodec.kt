@@ -18,8 +18,5 @@ import org.penella.messages.StoreAddString
  * Created by alisle on 1/15/17.
  */
 class StoreAddStringCodec : JSONCodec<StoreAddString>(StoreAddString::class.java) {
-    override fun name(): String {
-        return "StoreAddString"
-    }
-
+    override fun name() = "StoreAddString"
 }

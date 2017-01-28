@@ -18,7 +18,5 @@ import org.penella.messages.StatusMessage
  * Created by alisle on 1/14/17.
  */
 class StatusMessageCodec : JSONCodec<StatusMessage>(StatusMessage::class.java) {
-    override fun name(): String {
-        return "StatusMessage"
-    }
+    override fun name() = "StatusMessage"
 }

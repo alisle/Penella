@@ -18,7 +18,5 @@ import org.penella.messages.ShardSize
  * Created by alisle on 1/26/17.
  */
 class ShardSizeCodec : JSONCodec<ShardSize>(ShardSize::class.java) {
-    override fun name(): String {
-        return "ShardSize"
-    }
+    override fun name()= "ShardSize"
 }

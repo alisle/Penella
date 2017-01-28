@@ -18,7 +18,5 @@ import org.penella.messages.IndexResultSet
  * Created by alisle on 1/25/17.
  */
 class IndexResultSetCodec : JSONCodec<IndexResultSet>(IndexResultSet::class.java) {
-    override fun name(): String {
-        return "IndexResultSet"
-    }
+    override fun name() =  "IndexResultSet"
 }

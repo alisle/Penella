@@ -18,7 +18,5 @@ import org.penella.messages.IndexGetSecondLayer
  * Created by alisle on 1/25/17.
  */
 class IndexGetSecondLayerCodec  : JSONCodec<IndexGetSecondLayer>(IndexGetSecondLayer::class.java) {
-    override fun name(): String {
-        return "IndexGetSecondLayer"
-    }
+    override fun name()  = "IndexGetSecondLayer"
 }

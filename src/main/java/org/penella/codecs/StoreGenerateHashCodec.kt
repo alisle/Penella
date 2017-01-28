@@ -21,7 +21,5 @@ import org.penella.messages.StoreGenerateHash
  * Created by alisle on 1/15/17.
  */
 class StoreGenerateHashCodec : JSONCodec<StoreGenerateHash>(StoreGenerateHash::class.java) {
-    override fun name(): String {
-        return "StoreGenerateHash"
-    }
+    override fun name() = "StoreGenerateHash"
 }

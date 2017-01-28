@@ -48,6 +48,7 @@ class IndexVerticalTest {
 
     @Before
     fun setUp(context: TestContext) {
+        IndexVertical.registerCodecs(vertx)
         vertx.eventBus().registerDefaultCodec(StatusMessage::class.java, StatusMessageCodec())
         vertx.deployVerticle(IndexVertical("test", SubjectPropertyObjectBSTreeIndex()))
     }

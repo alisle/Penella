@@ -3,6 +3,7 @@ package org.penella.index
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.Future
 import io.vertx.core.Handler
+import io.vertx.core.Vertx
 import io.vertx.core.eventbus.Message
 import org.penella.MailBoxes
 import org.penella.codecs.IndexAddCodec
@@ -28,11 +29,13 @@ import org.penella.messages.*
  * Created by alisle on 1/25/17.
  */
 class IndexVertical(val name: String, val index: IIndex) : AbstractVerticle() {
-    private fun registerCodecs() {
-        vertx.eventBus().registerDefaultCodec(IndexAdd::class.java, IndexAddCodec())
-        vertx.eventBus().registerDefaultCodec(IndexGetFirstLayer::class.java, IndexGetFirstLayerCodec())
-        vertx.eventBus().registerDefaultCodec(IndexGetSecondLayer::class.java, IndexGetSecondLayerCodec())
-        vertx.eventBus().registerDefaultCodec(IndexResultSet::class.java, IndexResultSetCodec())
+    companion object {
+         fun registerCodecs(vertx: Vertx) {
+            vertx.eventBus().registerDefaultCodec(IndexAdd::class.java, IndexAddCodec())
+            vertx.eventBus().registerDefaultCodec(IndexGetFirstLayer::class.java, IndexGetFirstLayerCodec())
+            vertx.eventBus().registerDefaultCodec(IndexGetSecondLayer::class.java, IndexGetSecondLayerCodec())
+            vertx.eventBus().registerDefaultCodec(IndexResultSet::class.java, IndexResultSetCodec())
+        }
     }
 
     private val addTripleHandler = Handler<Message<IndexAdd>> { msg ->
@@ -63,8 +66,6 @@ class IndexVertical(val name: String, val index: IIndex) : AbstractVerticle() {
 
 
     override fun start(startFuture: Future<Void>?) {
-        registerCodecs()
-
         vertx.eventBus().consumer<IndexAdd>(MailBoxes.INDEX_ADD_TRIPLE.mailbox + name).handler(addTripleHandler)
         vertx.eventBus().consumer<IndexGetFirstLayer>(MailBoxes.INDEX_GET_FIRST.mailbox + name).handler(getFirstLayerHandler)
         vertx.eventBus().consumer<IndexGetSecondLayer>(MailBoxes.INDEX_GET_SECOND.mailbox + name).handler(getSecondLayerHandler)

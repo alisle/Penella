@@ -19,7 +19,5 @@ import org.penella.messages.ShardAdd
  * Created by alisle on 1/26/17.
  */
 class ShardAddCodec: JSONCodec<ShardAdd>(ShardAdd::class.java) {
-    override fun name(): String {
-        return "ShardAdd"
-    }
+    override fun name() = "ShardAdd"
 }

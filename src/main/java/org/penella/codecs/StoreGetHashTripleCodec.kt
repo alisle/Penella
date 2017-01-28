@@ -21,7 +21,5 @@ import org.penella.messages.StoreGetHashTriple
  * Created by alisle on 1/15/17.
  */
 class StoreGetHashTripleCodec : JSONCodec<StoreGetHashTriple>(StoreGetHashTriple::class.java) {
-    override fun name(): String {
-        return "StoreGetHashTriple"
-    }
+    override fun name() = "StoreGetHashTriple"
 }

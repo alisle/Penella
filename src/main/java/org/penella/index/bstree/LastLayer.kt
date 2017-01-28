@@ -44,7 +44,6 @@ class LastLayer(indexType: IndexType ) {
     }
 
     fun all() : Array<HashTriple> {
-        log.trace("Returning all")
         return HashTriple.create(type, layer.allPayloads())
     }
 

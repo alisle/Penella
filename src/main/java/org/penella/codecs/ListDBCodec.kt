@@ -18,7 +18,5 @@ import org.penella.messages.ListDB
  * Created by alisle on 1/14/17.
  */
 class ListDBCodec : JSONCodec<ListDB>(ListDB::class.java) {
-    override fun name(): String {
-        return "ListDB"
-    }
+    override fun name() = "ListDB"
 }

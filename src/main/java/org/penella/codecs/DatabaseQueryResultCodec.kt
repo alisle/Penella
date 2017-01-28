@@ -1,9 +1,6 @@
 package org.penella.codecs
 
-import io.vertx.core.buffer.Buffer
-import io.vertx.core.eventbus.MessageCodec
-import io.vertx.core.json.Json
-import org.penella.messages.StoreGetString
+import org.penella.messages.DatabaseQueryResult
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +15,9 @@ import org.penella.messages.StoreGetString
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by alisle on 1/15/17.
+ *
+ * Created by alisle on 1/27/17.
  */
-class StoreGetStringCodec : JSONCodec<StoreGetString>(StoreGetString::class.java) {
-    override fun name() = "StoreGetString"
+class DatabaseQueryResultCodec : JSONCodec<DatabaseQueryResult>(DatabaseQueryResult::class.java){
+    override fun name()   = "DatabaseQueryResult"
 }

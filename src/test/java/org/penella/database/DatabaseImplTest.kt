@@ -5,9 +5,7 @@ import org.junit.Assert
 import org.penella.index.IndexType
 
 import org.penella.index.bstree.BSTreeIndexFactory
-import org.penella.messages.AddTriple
-import org.penella.messages.BulkAddTriples
-import org.penella.messages.RawQuery
+import org.penella.query.Query
 import org.penella.query.QueryProcessor
 import org.penella.store.BSTreeStore
 import org.penella.structures.triples.HashTriple
@@ -36,7 +34,7 @@ class DatabaseImplTest {
     fun testAddTriple() {
         val store = BSTreeStore(665445839L)
         val db : IDatabase = DatabaseImpl("Test DB", store, BSTreeIndexFactory(), 10)
-        (0L until 10000L).forEach { x -> db.handle(AddTriple(Triple("Subject " + x, "Property " + x, "Object " + x))) }
+        (0L until 10000L).forEach { x -> db.add(Triple("Subject " + x, "Property " + x, "Object " + x)) }
         Assert.assertEquals(10000L, db.size())
     }
 
@@ -44,8 +42,8 @@ class DatabaseImplTest {
     fun testBulkAdd() {
         val store = BSTreeStore(665445839L)
         val db : IDatabase = DatabaseImpl("Test DB", store, BSTreeIndexFactory(), 10)
-        val bulkAdd  = BulkAddTriples((0L until 10000L).map { x -> Triple("Subject " + x, "Property " + x, "Object " + x) }.toTypedArray())
-        db.handle(bulkAdd)
+        val triples  = (0L until 10000L).map { x -> Triple("Subject " + x, "Property " + x, "Object " + x) }.toTypedArray()
+        db.bulkAdd(triples)
 
         Assert.assertEquals(10000L, db.size())
     }
@@ -54,9 +52,12 @@ class DatabaseImplTest {
     fun testGet() {
         val store = BSTreeStore(665445839L)
         val db : IDatabase = DatabaseImpl("Test DB", store, BSTreeIndexFactory(), 10)
-        db.handle(BulkAddTriples((0L until 10000L).map { x -> Triple("Subject " + x, "Property " + x, "Object " + x) }.toTypedArray()))
+        val bulkTriples = (0L until 10000L).map { x -> Triple("Subject " + x, "Property " + x, "Object " + x) }.toTypedArray()
+
+        db.bulkAdd(bulkTriples)
+
         val triples = db.get(IndexType.SPO, HashTriple(Triple.getHash("Subject 10"), Triple.getHash("Property 10"), 0L))
-        assertEquals(triples.size, 1);
+        assertEquals(triples.size, 1)
         assertEquals(triples.distinct()[0].hashSubject, Triple.getHash("Subject 10"))
     }
 
@@ -67,11 +68,11 @@ class DatabaseImplTest {
         val processor = QueryProcessor(db, store)
         val testTriples = ( 0 to 5 ).toList().map { Triple("Test-Subject", "Property", "Object-$it") };
 
-        testTriples.forEach { db.handle(AddTriple(it)) }
-        db.handle(BulkAddTriples((0L until 10000L).map { x -> Triple("Subject " + x, "Property " + x, "Object " + x) }.toTypedArray()))
+        testTriples.forEach { db.add(it) }
+        db.bulkAdd((0L until 10000L).map { x -> Triple("Subject " + x, "Property " + x, "Object " + x) }.toTypedArray())
 
-        val raw = RawQuery(arrayOf("?Subject"), arrayOf("?Subject", "?Object"), arrayOf(Triple("?Subject", "Property", "?Object")))
-        val results = processor.process(raw)
+        val query = Query(arrayOf("?Subject"), arrayOf("?Subject", "?Object"), arrayOf(Triple("?Subject", "Property", "?Object")))
+        val results = processor.process(query)
         results.forEach { x -> Assert.assertTrue(testTriples.contains(x)) }
     }
 }

@@ -5,12 +5,8 @@ import org.junit.Test
 import org.penella.database.DatabaseImpl
 import org.penella.database.IDatabase
 import org.penella.index.bstree.BSTreeIndexFactory
-import org.penella.messages.AddTriple
-import org.penella.messages.BulkAddTriples
-import org.penella.messages.RawQuery
 import org.penella.store.BSTreeStore
 import org.penella.structures.triples.Triple
-import kotlin.test.assertEquals
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,11 +31,11 @@ class QueryProcessorTest {
         val processor = QueryProcessor(db, store)
         val testTriples = ( 0 to 5 ).toList().map { Triple("Test-Subject", "Property", "Object-$it") };
 
-        testTriples.forEach { db.handle(AddTriple(it)) }
-        db.handle(BulkAddTriples((0L until 10000L).map { x -> Triple("Subject " + x, "Property " + x, "Object " + x) }.toTypedArray()))
+        testTriples.forEach { db.add(it) }
+        db.bulkAdd((0L until 10000L).map { x -> Triple("Subject " + x, "Property " + x, "Object " + x) }.toTypedArray())
 
-        val raw = RawQuery(arrayOf("?Subject"), arrayOf("?Subject", "?Object"), arrayOf(Triple("?Subject", "Property", "?Object")))
-        val results = processor.process(raw)
+        val query = Query(arrayOf("?Subject"), arrayOf("?Subject", "?Object"), arrayOf(Triple("?Subject", "Property", "?Object")))
+        val results = processor.process(query)
         results.forEach { x -> Assert.assertTrue(testTriples.contains(x)) }
     }
 }

@@ -21,7 +21,5 @@ import org.penella.messages.ListDBResponse
  * Created by alisle on 1/14/17.
  */
 class ListDBResponseCodec : JSONCodec<ListDBResponse>(ListDBResponse::class.java) {
-    override fun name(): String {
-        return "ListDBResponse"
-    }
+    override fun name() = "ListDBResponse"
 }

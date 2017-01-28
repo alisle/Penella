@@ -21,7 +21,5 @@ import org.penella.messages.StoreGetStringResponse
  * Created by alisle on 1/15/17.
  */
 class StoreGetStringResponseCodec : JSONCodec<StoreGetStringResponse>(StoreGetStringResponse::class.java) {
-    override fun name(): String {
-        return "StoreGetStringResponse"
-    }
+    override fun name()  = "StoreGetStringResponse"
 }

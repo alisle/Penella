@@ -19,7 +19,5 @@ import org.penella.messages.ShardGet
  * Created by alisle on 1/26/17.
  */
 class ShardGetCodec : JSONCodec<ShardGet>(ShardGet::class.java) {
-    override fun name(): String {
-        return "ShardGet"
-    }
+    override fun name() = "ShardGet"
 }

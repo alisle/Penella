@@ -18,7 +18,5 @@ import org.penella.messages.CreateDB
  * Created by alisle on 1/13/17.
  */
 class CreateDBCodec : JSONCodec<CreateDB>(CreateDB::class.java) {
-    override fun name(): String {
-        return "CreateDB"
-    }
+    override fun name() = "CreateDB"
 }

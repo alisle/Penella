@@ -2,9 +2,6 @@ package org.penella.database
 
 import org.penella.index.IIndexFactory
 import org.penella.index.IndexType
-import org.penella.messages.AddTriple
-import org.penella.messages.BulkAddTriples
-import org.penella.messages.RawQuery
 import org.penella.query.*
 import org.penella.shards.Shard
 import org.penella.store.IStore
@@ -35,11 +32,11 @@ class DatabaseImpl constructor(val name: String,  private val store: IStore, pri
         val log : Logger = LoggerFactory.getLogger(DatabaseImpl::class.java)
     }
 
-    private val shards = Array(numberOfShards, { x -> Shard(indexFactory) })
+    private val shards = Array(numberOfShards, { x -> Shard("$name-shard-$x-", indexFactory) })
     private val size = shards.size.toLong()
     private val processor = QueryProcessor(this, store)
 
-    private fun add(triple : Triple) {
+    override fun add(triple : Triple) {
         if(log.isTraceEnabled) log.trace("Adding $triple to store")
         store.add(triple)
 
@@ -55,8 +52,7 @@ class DatabaseImpl constructor(val name: String,  private val store: IStore, pri
         return set
     }
 
-    override fun handle(add: AddTriple) = add(add.triple)
-    override fun handle(bulkAdd: BulkAddTriples) = bulkAdd.triples.forEach { i -> add(i) }
-    override fun handle(query: RawQuery) = processor.process(query)
+    override fun bulkAdd(triples: Array<Triple>) = triples.forEach { i -> add(i) }
+    override fun query(query: Query) = processor.process(query)
     override fun size() : Long = shards.fold(0L)  { x, y -> x + y.size() }
 }

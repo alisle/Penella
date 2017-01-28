@@ -21,7 +21,5 @@ import org.penella.messages.StoreAddTriple
  * Created by alisle on 1/15/17.
  */
 class StoreAddTripleCodec : JSONCodec<StoreAddTriple>(StoreAddTriple::class.java) {
-    override fun name(): String {
-        return "StoreAddTriple"
-    }
+    override fun name() = "StoreAddTriple"
 }

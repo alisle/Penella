@@ -18,8 +18,5 @@ import org.penella.messages.IndexAdd
  * Created by alisle on 1/25/17.
  */
 class IndexAddCodec : JSONCodec<IndexAdd>(IndexAdd::class.java) {
-
-    override fun name(): String {
-        return "IndexAdd"
-    }
+    override fun name()  = "IndexAdd"
 }

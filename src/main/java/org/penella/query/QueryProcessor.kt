@@ -1,7 +1,6 @@
 package org.penella.query
 
 import org.penella.database.IDatabase
-import org.penella.messages.RawQuery
 import org.penella.store.IStore
 import org.penella.structures.triples.HashTriple
 import org.penella.structures.triples.Triple
@@ -26,9 +25,9 @@ import java.util.*
 
 class QueryProcessor(val database: IDatabase, val store : IStore) {
 
-    fun process(raw: RawQuery) : Array<Triple?> {
+    fun process(raw: Query) : Array<Triple?> {
         val outputs = raw.outputs
-        val queries = raw.triples.map { QueryTriple(it) }.toTypedArray()
+        val queries = raw.triples.map(::QueryTriple).toTypedArray()
         val potentials = HashMap<String, Set<HashTriple>>()
 
         for(query in queries) {

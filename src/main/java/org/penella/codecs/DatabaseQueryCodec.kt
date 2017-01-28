@@ -1,4 +1,6 @@
-package org.penella.query
+package org.penella.codecs
+
+import org.penella.messages.DatabaseQuery
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +15,9 @@ package org.penella.query
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by alisle on 11/1/16.
+ *
+ * Created by alisle on 1/27/17.
  */
-interface IQuery {
+class DatabaseQueryCodec : JSONCodec<DatabaseQuery>(DatabaseQuery::class.java) {
+    override fun name() = "DatabaseQuery"
 }
