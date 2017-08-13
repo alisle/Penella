@@ -34,7 +34,7 @@ public class PersistenceHandler  {
     /**
      * The maximum size for a vlaue allowed
      */
-    private final int maxValueSize;
+    private final int maximumValueKB;
 
     /**
      * The number of buffers which we should have open at any time
@@ -63,12 +63,22 @@ public class PersistenceHandler  {
     private final LoadingCache<UUID, BufferWrapper> cache;
 
     /**
+     * We need to know the last position that Wrapper was at when we evicted them.
+     */
+    private final Map<UUID, Integer> lastPosition = new HashMap<>(1024);
+
+    /**
      * When a buffer is evicted from the cache, this makes sure that it's buffer is surrendered.
      */
     private final RemovalListener<UUID, BufferWrapper> removalListener = new RemovalListener<UUID, BufferWrapper>() {
         @Override
         public void onRemoval(RemovalNotification<UUID, BufferWrapper> removalNotification) {
-            BufferWrapper wrapper = (BufferWrapper)removalNotification.getValue();
+            if(log.isTraceEnabled()) { log.trace("Evicting Page: " + removalNotification.getKey() ); }
+
+            UUID uuid = removalNotification.getKey();
+            BufferWrapper wrapper = removalNotification.getValue();
+            lastPosition.put(uuid, wrapper.absolute());
+
             try {
                 wrapper.close();
             } catch (IOException ex) {
@@ -86,12 +96,19 @@ public class PersistenceHandler  {
             final String name = directory + File.separator +  uuid + ".dat";
             final RandomAccessFile  file = new RandomAccessFile(name, "rw");
             final FileChannel channel = file.getChannel();
+            if(log.isTraceEnabled()) { log.trace("Loading Page: " + uuid ); }
+
+            int position = 0;
+            if(lastPosition.containsKey(uuid)) {
+                position = lastPosition.get(uuid);
+            }
 
             BufferWrapper wrapper = new BufferWrapper(
                     uuid,
                     FileChannel.MapMode.READ_WRITE,
                     channel,
-                    bufferSizeKB );
+                    bufferSizeKB,
+                    position);
 
             return wrapper;
         }
@@ -100,21 +117,24 @@ public class PersistenceHandler  {
     /**
      * Creates a new Persistence Handler
      * @param directory Directory to store the data
-     * @param maxValueSize Maximum Value Size
+     * @param maximumValueKB Maximum Value Size
      * @param maxBuffers Maximum amount of Buffers in memory
-     * @param chunkSize The size of each of the Buffers
+     * @param bufferSizeKB The size of each of the Buffers
      * @param cacheConcurrencyLevel The number of threads for the cache
      */
     public PersistenceHandler(String directory,
-                              int maxValueSize,
+                              int maximumValueKB,
                               int maxBuffers,
-                              int chunkSize,
+                              int bufferSizeKB,
                               int cacheConcurrencyLevel) {
+        if(maximumValueKB >= bufferSizeKB) {
+            throw new RuntimeException("Cannot have a Buffer Size less than a Maximum Value Size");
+        }
 
         this.directory = directory;
-        this.maxValueSize = maxValueSize;
+        this.maximumValueKB = maximumValueKB * 512;
         this.maxBuffers = maxBuffers;
-        this.bufferSizeKB = chunkSize * 1024;
+        this.bufferSizeKB = bufferSizeKB * 1024;
         this.cacheConcurrencyLevel = cacheConcurrencyLevel;
         this.cache = createCache();
     }
@@ -142,8 +162,10 @@ public class PersistenceHandler  {
      */
     public String get(final UUID uuid, final int position) throws ExecutionException, IOException {
         final BufferWrapper wrapper = cache.get(uuid);
+
         final int size = Ints.fromByteArray(wrapper.read(position, 4));
         final byte[] bytes = wrapper.read(position + 4, size);
+        if(log.isTraceEnabled()) { log.trace("Getting from page: " + uuid + " position: " + position + " size: " + size ); }
 
         //TODO: Make this a proper serializer.
         return new String(bytes, Charsets.UTF_8);
@@ -164,18 +186,18 @@ public class PersistenceHandler  {
         final byte[] bytes = value.getBytes(Charsets.UTF_8);
         final byte[] byteSize = Ints.toByteArray(bytes.length);
 
-        if( bytes.length > maxValueSize ) {
+        if( bytes.length > maximumValueKB) {
             log.error(String.format("Unable to write value as it is too large! Value: %s has size of %d where maximum is %d",
                     value,
                     bytes.length,
-                    maxValueSize)
+                    maximumValueKB)
             );
             throw new IOException("Value is too large to write!");
         }
+        if(log.isTraceEnabled()) { log.trace("Putting to page: " + uuid + " value: " + value+ " size: " + bytes.length + " (SizeByteArray:"+byteSize.length+")"); }
 
         // We need to add padding to make sure look ups are standard.
-        final byte[] padding = new byte[maxValueSize - (bytes.length + byteSize.length)];
-        final int position = wrapper.write(byteSize, bytes, padding);
+        final int position = wrapper.write(byteSize, bytes);
         return position;
     }
 

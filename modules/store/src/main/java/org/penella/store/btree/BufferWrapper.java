@@ -12,18 +12,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
  * Created by alisle on 7/8/17.
  */
 public class BufferWrapper implements Comparable<UUID> {
@@ -70,6 +58,37 @@ public class BufferWrapper implements Comparable<UUID> {
         this(UUID.randomUUID(), mode, channel, step);
     }
 
+    /**
+     * Creates a Buffer Wrapper
+     * @param ID ID for this Wrapper
+     * @param mode The mode which it should be opened with.
+     * @param channel The File Channel to make the Buffer ARound
+     * @param step The size to open the buffer with.
+     * @param lastPosition The position which should open around within the buffer.
+     * @throws IOException We failed to create the mapped buffer.
+     */
+    public BufferWrapper(UUID ID, FileChannel.MapMode mode, FileChannel channel, int step, int lastPosition) throws IOException {
+        this.id = ID;
+        this.mode = mode;
+        this.channel = channel;
+        this.step = step;
+
+        if(lastPosition == 0 && channel.size() > 0) {
+            log.debug("Position was given as 0 but the file has a size. Opening it with the step multiple");
+            // The size is going to be set to the END of the last step when this file was opened. If we use a large
+            // step like 10MB and only write 1MB then close this buffer. When we open it we will start appending it
+            // to the 10MB, obviously leaving a lot of space....
+            this.offset = new AtomicInteger(((int)channel.size()  / step) * step);
+            this.buffer = this.channel.map(mode, this.offset.get(), this.step);
+
+        } else {
+            log.debug("Opening the wrapper with a position: " + lastPosition);
+            this.offset = new AtomicInteger((lastPosition / step) * step);
+            this.buffer = this.channel.map(mode, this.offset.get(), this.step);
+            this.buffer.position(lastPosition % step);
+        }
+    }
+
 
     /**
      * Creates the BufferWrapper
@@ -84,8 +103,14 @@ public class BufferWrapper implements Comparable<UUID> {
         this.mode = mode;
         this.channel = channel;
         this.step = step;
-        this.offset = new AtomicInteger(0);
-        this.buffer = this.channel.map(mode, 0, this.step);
+
+        // The size is going to be set to the END of the last step when this file was opened. If we use a large
+        // step like 10MB and only write 1MB then close this buffer. When we open it we will start appending it
+        // to the 10MB, obviously leaving a lot of space....
+
+        // TODO: Keep offset we actually reach in the file to start from there again.
+        this.offset = new AtomicInteger(((int)channel.size()  / step) * step);
+        this.buffer = this.channel.map(mode, this.offset.get(), this.step);
     }
 
     /**
@@ -93,7 +118,7 @@ public class BufferWrapper implements Comparable<UUID> {
      * @return Position within the file we're at
      */
     public synchronized int absolute() {
-        return this.offset.get() + buffer.position();
+        return this.offset.get()  + buffer.position();
     }
 
     /**
@@ -140,12 +165,12 @@ public class BufferWrapper implements Comparable<UUID> {
     private  void checkBuffer(int position, int size) throws IOException {
         // Check if the size is big enough for a step.
         if(size > step) {
-            throw new IOException("Bytes are too big to write into a whole step! Step:" + step + ", Size:" + size);
+            throw new IOException("Bytes are too big to write into a whole step! Step: " + step + ", Size: " + size);
         }
 
         // Check to see if this position is within our buffer.
         if(position < this.offset.get() || (position + size) > (this.offset.get() + step)) {
-            if(log.isTraceEnabled()) { log.trace("Creating new buffer"); }
+            if(log.isTraceEnabled()) { log.trace("Creating new buffer for " + id); }
 
             final int newOffset = ((position + size) / step) * step;
 
@@ -169,8 +194,15 @@ public class BufferWrapper implements Comparable<UUID> {
      * @return Byte Array from that position
      * @throws IOException Something has really gone wrong.
      */
-    public byte[] read(int position, int size) throws IOException {
+    public synchronized byte[] read(int position, int size) throws IOException {
+        if(log.isTraceEnabled()) { log.trace("Reading at position: " + position + " from buffer: " + this.id + " size: " + size); }
         checkBuffer(position, size);
+
+        // we're going to be moving the position for the read. We need to make sure we mark it.
+        // We should be able to use buffer.mark() for this, but the buffer.position below invalidates the mark.
+        // Making it completely fucking useless.
+        int lastPosition = buffer.position();
+
         byte[] bytes = new byte[size];
 
         final int relativePosition = position - this.offset.get();
@@ -178,6 +210,9 @@ public class BufferWrapper implements Comparable<UUID> {
             buffer.position(relativePosition);
             buffer.get(bytes);
         }
+
+        // We've finished doing our reading, we reset the buffer back.
+        buffer.position(lastPosition);
 
         return bytes;
     }
@@ -189,8 +224,10 @@ public class BufferWrapper implements Comparable<UUID> {
      * @return The position where the bytes were written to.
      * @throws IOException Incase there was an error.
      */
-    public int write(int position, byte[] ... bytes) throws IOException {
+    public synchronized int write(int position, byte[] ... bytes) throws IOException {
+
         final int size = getSize(bytes);
+        if(log.isTraceEnabled()) { log.trace("Writing at position: " + position + " from buffer: " + this.id + " size: " + size); }
 
         checkBuffer(position, size);
 

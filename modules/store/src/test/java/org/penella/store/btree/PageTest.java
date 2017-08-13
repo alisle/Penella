@@ -30,7 +30,7 @@ public class PageTest {
         tempDir.deleteOnExit();
 
         String directory = tempDir.getAbsolutePath();
-        PersistenceHandler handler = new PersistenceHandler(directory, 1024, 10, 100, 2);
+        PersistenceHandler handler = new PersistenceHandler(directory, 1024, 10, 2048, 2);
 
         return handler;
     }
@@ -178,6 +178,12 @@ public class PageTest {
         Iterator iterator = page.keys().iterator();
         Assert.assertEquals(0L, iterator.next());
         Assert.assertEquals(1L, iterator.next());
+
+        Assert.assertEquals("2", top.get(2L).get());
+        Assert.assertEquals("3", top.get(3L).get());
+
+        Assert.assertEquals("0", page.get(0L).get());
+        Assert.assertEquals("1", page.get(1L).get());
 
         Assert.assertFalse(iterator.hasNext());
 

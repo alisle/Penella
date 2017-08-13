@@ -3,7 +3,10 @@ package org.penella.store;
 import org.penella.structures.triples.HashTriple;
 import org.penella.structures.triples.Triple;
 
+import java.io.IOException;
+import java.rmi.server.ExportException;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,27 +29,27 @@ public interface IStore {
      * @param value Value to add
      * @return Hash Key of the value.
      */
-    long add(String value);
+    long add(String value) throws IOException, ExecutionException;
 
     /**
      * Adds all the strings from the Triple into the store.
      * @param triple Triple who's strings need to be added to the store.
      */
-    void add(Triple triple);
+    void add(Triple triple) throws IOException, ExecutionException;
 
     /**
      * Gets the string associated with key.
      * @param hash The hash to look up
      * @return The String if it's within the Map
      */
-    Optional<String> get(long hash);
+    Optional<String> get(long hash) throws IOException, ExecutionException;
 
     /**
      * Gets the Triple based off the hashes within the Hash Triple
      * @param triple Triple of hashes to look up
      * @return Triple of Strings
      */
-    Optional<Triple> get(HashTriple triple);
+    Optional<Triple> get(HashTriple triple) throws IOException, ExecutionException;
 
     /**
      * Returns a hash for the specified value.

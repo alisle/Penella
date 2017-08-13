@@ -34,9 +34,9 @@ public class PersistenceHandlerTest {
     @Test
     public void TestPutGet() throws Exception {
         PersistenceHandler handler = new PersistenceHandler(tempDir(),
-                200,
+                4,
                 5,
-                100,
+                1024,
                 2);
         UUID uuid = UUID.randomUUID();
         int position = handler.put(uuid, "Hello World");
@@ -48,7 +48,7 @@ public class PersistenceHandlerTest {
     @Test
     public void TestPutGetCache() throws Exception {
         PersistenceHandler handler = new PersistenceHandler(tempDir(),
-                200,
+                4,
                 1,
                 100,
                 2);
@@ -64,6 +64,60 @@ public class PersistenceHandlerTest {
 
         Assert.assertEquals("Hello World", world);
         Assert.assertEquals("Hello World 2", world2);
+
+    }
+
+    @Test
+    public void TestPutGetPutGet() throws Exception {
+        PersistenceHandler handler = new PersistenceHandler(tempDir(),
+                200,
+                100,
+                100000,
+                2);
+
+        UUID uuid = UUID.randomUUID();
+        int position[] = new int[10];
+        int newposition[] = new int[10];
+
+        for(int x = 0; x < 10; x++) {
+            position[x] = handler.put(uuid, "" + x);
+        }
+
+        for(int x = 9; x >= 0; x--) {
+            Assert.assertEquals("" + x, handler.get(uuid, position[x]));
+        }
+
+        for(int x = 0; x < 10; x++){
+            newposition[x] = handler.put(uuid, "New " + x);
+            Assert.assertEquals("New " + x, handler.get(uuid, newposition[x]));
+        }
+
+        for(int x = 9; x >= 0; x--) {
+            Assert.assertEquals("" + x, handler.get(uuid, position[x]));
+        }
+
+    }
+
+    @Test
+    public void TestPutGetLarge() throws Exception {
+        PersistenceHandler handler = new PersistenceHandler(tempDir(),
+                200,
+                100,
+                100000,
+                2);
+
+        int COUNT = 100000;
+        int position[] = new int[COUNT];
+        UUID uuid = UUID.randomUUID();
+
+        for(int x = 0; x < COUNT; x++) {
+            position[x] = handler.put(uuid, "" + x);
+        }
+
+        for(int x = 0; x < COUNT; x++) {
+            String value = handler.get(uuid, position[x]);
+            Assert.assertEquals("" + x, value);
+        }
 
     }
 }

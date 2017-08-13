@@ -27,15 +27,17 @@ import java.nio.channels.FileChannel;
  * Created by alisle on 7/8/17.
  */
 public class BufferWrapperTest {
-
-    private FileChannel createChannel() throws Exception{
+    private RandomAccessFile createFile() throws Exception {
         final File tempDir = Files.createTempDir();
         final String name = tempDir.toString() + File.separator + "test.dat";
         final RandomAccessFile file = new RandomAccessFile(name, "rw");
-
         tempDir.deleteOnExit();
 
-        return file.getChannel();
+        return file;
+    }
+
+    private FileChannel createChannel() throws Exception{
+        return createFile().getChannel();
     }
 
     @Test
@@ -146,6 +148,58 @@ public class BufferWrapperTest {
         wrapper.write(1000, readBytes);
         Assert.assertEquals(readBytes.length, wrapper.relative());
     }
+
+    @Test
+    public void testCheckAbsolutePositionAfterNewBufferWrapperBeyondRelative() throws Exception {
+        final FileChannel channel = createChannel();
+        final BufferWrapper wrapper =  new BufferWrapper(FileChannel.MapMode.READ_WRITE, channel, 100);
+
+        final String string = "This is a string";
+        final byte[] writeBytes = string.getBytes(Charsets.UTF_8);
+        Assert.assertEquals(0, wrapper.absolute());
+
+        wrapper.write(110, writeBytes);
+        Assert.assertEquals(110 + writeBytes.length, wrapper.absolute());
+
+        final BufferWrapper newWrapper = new BufferWrapper(FileChannel.MapMode.READ_WRITE, channel, 100);
+        newWrapper.write(writeBytes);
+
+        // The old buffer was closed with 126 bytes been written, but we were at an offset of 100 (as the steps are set at 100)
+        // this means we open this, the file would of ended at the absolute length of the byteBuffer + the offset.
+        // Hence here that would be 100 + 100, so we should be at 200. The size here will be 216.
+        Assert.assertEquals(writeBytes.length + 200, newWrapper.absolute());
+    }
+
+    @Test
+    public void testResumePositionAfterNewBufferWrapper() throws Exception {
+
+        final File tempDir = Files.createTempDir();
+        final String name = tempDir.toString() + File.separator + "test.dat";
+        final RandomAccessFile file = new RandomAccessFile(name, "rw");
+        tempDir.deleteOnExit();
+
+        final BufferWrapper wrapper =  new BufferWrapper(FileChannel.MapMode.READ_WRITE, file.getChannel(), 100);
+
+        final String string = "This is a string";
+        final byte[] writeBytes = string.getBytes(Charsets.UTF_8);
+        Assert.assertEquals(0, wrapper.relative());
+
+        wrapper.write(writeBytes);
+        Assert.assertEquals(writeBytes.length, wrapper.relative());
+        wrapper.close();
+
+        final RandomAccessFile newfile = new RandomAccessFile(name, "rw");
+
+
+        final BufferWrapper newWrapper = new BufferWrapper(FileChannel.MapMode.READ_WRITE, newfile.getChannel(), 100);
+        newWrapper.write(writeBytes);
+        Assert.assertEquals(writeBytes.length, newWrapper.relative());
+
+
+
+        newWrapper.close();
+    }
+
 
     @Test
     public void testMultipleBuffersWrite()  throws Exception {

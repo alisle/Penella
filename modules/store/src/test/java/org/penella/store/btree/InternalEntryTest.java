@@ -30,7 +30,7 @@ public class InternalEntryTest {
         tempDir.deleteOnExit();
 
         String directory = tempDir.getAbsolutePath();
-        PersistenceHandler handler = new PersistenceHandler(directory, 1024, 10, 100, 2);
+        PersistenceHandler handler = new PersistenceHandler(directory, 4, 10, 1024, 2);
 
         Page page = new Page(handler, 10, false);
         PageHeader header = page.getHeader();

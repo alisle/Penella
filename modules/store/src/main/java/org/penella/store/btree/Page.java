@@ -97,7 +97,7 @@ public class Page {
      * @return The value stored at the key.
      */
     // TODO: This should be an optional
-    public Optional<String> get(long key) throws Exception {
+    public Optional<String> get(long key) throws IOException, ExecutionException {
         SearchResults results = position(key);
         return Optional.ofNullable(handler.get(header.getUuid(), results.filePosition));
     }
@@ -183,8 +183,10 @@ public class Page {
             throw new RuntimeException("This node is already full and needs to be split");
         }
 
+
         long smallest = (long)page.keys().iterator().next();
         int position = position(smallest).position;
+        if(log.isTraceEnabled()) { log.trace(getHeader().getUuid() + " : Adding new page: " + page.getHeader().getUuid() + ", position: "  + position  ); }
 
         for(int x = header.getCurrentSize() + 1; x  > position; x--) {
             entries[x] = entries[x - 1];
@@ -211,10 +213,12 @@ public class Page {
         for(int x = header.getCurrentSize() + 1; x  > position; x--) {
             entries[x] = entries[x - 1];
         }
+        if(log.isTraceEnabled()) { log.trace(getHeader().getUuid() + " : Adding new entry: K: " + key + ", V: " + value + ", position: "  + position  ); }
 
         int filePosition = handler.put(header.getUuid(), value);
         entries[position] = new ExternalEntry(header, key,  filePosition);
         header.incrementCurrentSize();
+
     }
 
     /**
@@ -225,15 +229,17 @@ public class Page {
         if(log.isTraceEnabled()) { log.trace("Splitting Page:" + header.getUuid()); }
 
         Page page = new Page(handler, header.getMaxPageSize(), this.isExternal());
-
         for(int x = header.getCurrentSize() / 2; x < header.getCurrentSize(); x++) {
             if(isExternal()) {
                 final ExternalEntry entry = (ExternalEntry)entries[x];
+                if(log.isTraceEnabled()) { log.trace("Splitting External Entry: " + header.getUuid() + " with hash: " + entry.getKey() + ", position: " + entry.getPosition()); }
                 page.add(entry.getKey(), handler.get(header.getUuid(), entry.getPosition()));
             } else {
                 final InternalEntry entry = (InternalEntry)entries[x];
+                if(log.isTraceEnabled()) { log.trace("Splitting Internal Entry: " + header.getUuid() + " with hash: " + entry.getKey() + ", next: " + entry.getHeader().getUuid()); }
                 page.add(entry.getNext());
             }
+
             this.entries[x] = null;
         }
 
