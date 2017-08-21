@@ -155,6 +155,7 @@ public class BufferWrapper implements Comparable<UUID> {
         this.buffer = null;
     }
 
+
     /**
      * Checks to see if this buffer matches the current position, if it doesn't then it will
      * create a new buffer within the range of the new position and size.

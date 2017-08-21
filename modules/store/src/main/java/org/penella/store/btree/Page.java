@@ -229,7 +229,8 @@ public class Page {
         if(log.isTraceEnabled()) { log.trace("Splitting Page:" + header.getUuid()); }
 
         Page page = new Page(handler, header.getMaxPageSize(), this.isExternal());
-        for(int x = header.getCurrentSize() / 2; x < header.getCurrentSize(); x++) {
+        int pivot = header.getCurrentSize() / 2;
+        for(int x = pivot; x < header.getCurrentSize(); x++) {
             if(isExternal()) {
                 final ExternalEntry entry = (ExternalEntry)entries[x];
                 if(log.isTraceEnabled()) { log.trace("Splitting External Entry: " + header.getUuid() + " with hash: " + entry.getKey() + ", position: " + entry.getPosition()); }
