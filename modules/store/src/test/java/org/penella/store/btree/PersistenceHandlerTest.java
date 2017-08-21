@@ -106,7 +106,7 @@ public class PersistenceHandlerTest {
                 100000,
                 2);
 
-        int COUNT = 100000;
+        int COUNT = 100;
         int position[] = new int[COUNT];
         UUID uuid = UUID.randomUUID();
 
