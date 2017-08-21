@@ -33,7 +33,7 @@ public class BTreeStoreTest {
 
     @Test
     public void testAddGetSingle() throws Exception {
-        int COUNT = 100000;
+        int COUNT = 100;
         long hashes[] = new long[COUNT];
 
         BTreeStore store = new BTreeStore( 1024, getHandler());
